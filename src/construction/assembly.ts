@@ -85,7 +85,11 @@ export function assemblySteps(cfg: FurnitureConfig, res: BuildResult, drill: Dri
       title: 'Fronten',
       items: [
         has((s) => s.surface.startsWith('matt')) ? 'Mattglas mit Spiegelkleber vollflächig auf die Multiplex-Trägertüren kleben (Glas ringsum bündig). 24 h aushärten lassen.' : '',
-        has((s) => s.surface === 'glass-clear' && s.front !== 'drawers') ? 'ESG-Klarglastüren beim Glaser mit Scharnierbohrungen bestellen (Maße lt. Zuschnittliste, Kanten poliert).' : '',
+        has((s) => s.surface === 'glass-clear' && s.front !== 'drawers')
+          ? m.glassFrame !== 'none'
+            ? `Alu-Rahmentüren: Profile ${m.glassFrameWidth} × ${m.glassFrameDepth} mm auf Gehrung zuschneiden (oder fertig konfektioniert bestellen), Glas ${m.framedGlass} mm mit Dichtung einsetzen, Ecken verbinden. Scharniere mit Rahmenadapter.`
+            : 'ESG-Klarglastüren beim Glaser mit Scharnierbohrungen bestellen (Maße lt. Zuschnittliste, Kanten poliert).'
+          : '',
         has((s) => s.surface === 'oak') ? 'Parkettfronten: Diele auf Multiplexträger schrauben (von hinten) oder vollflächig verleimen. Bei der kleinen Fläche ist das unkritisch.' : '',
         has((s) => s.front === 'drawers') ? 'Schubkästen bauen (Seiten 12 mm), Unterflurführungen montieren, Fronten mit Fugenmaß ausrichten.' : '',
         m.frontStyle === 'overlay'

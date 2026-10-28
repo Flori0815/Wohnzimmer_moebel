@@ -107,6 +107,11 @@ Ringsum bleibt eine schmale Eichenkante. Umsetzung:
   deshalb ist die Klebung hier unkritisch.
 - **Klarglas-Vitrinentüren:** ESG 6 mm klar (optional Weißglas), als Ganzglastür mit Glastürscharnieren
   (Bohrungen vom Glaser) oder als schmaler Eichenrahmen mit eingelegter Scheibe. Die Scheibenmaße liefert Stufe 2.
+- **Optional: Klarglastür mit Metallrahmen** (App: „Klarglastür-Rahmen“: Alu natur, schwarz oder bronze;
+  Rahmenbreite, Profiltiefe und Glasstärke einstellbar, Standard 20 × 20 mm mit 4-mm-Glas). Es sind Alu-Rahmenprofile
+  für Möbeltüren, auf Gehrung mit Eckverbindern. Die Scheibe sitzt ca. 5 mm tief in der Profilnut. Die Profiltiefe ist
+  die Türstärke und bestimmt damit, wie weit der Korpus hinter der Frontebene liegt. Scharniere mit Rahmenadapter
+  passend zum Profilsystem verwenden. Profile gibt es fertig konfektioniert vom Profilhändler.
 - **Holzfronten:** Multiplex 12 mm + Diele 14 mm (= 26 mm, dann Scharniere für Dickfronten verwenden) oder
   3-Schicht-Massivholzplatte Eiche 19 mm.
 - **Hirnholz-Applikation (Lago-Kennzeichen):** quadratische Kacheln (ca. 160–200 mm) aus Eichen-Stammscheiben bzw.

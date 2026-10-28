@@ -164,7 +164,9 @@ export function computeDrilling(cfg: FurnitureConfig, res: BuildResult): DrillRe
         const onSide = d.wall.startsWith('seite');
         const mount = overlay ? (onSide ? 'aufliegend' : 'halb aufliegend (Mittelwand)') : 'einliegend';
         const type =
-          (sec.surface === 'glass-clear'
+          (sec.surface === 'glass-clear' && m.glassFrame !== 'none'
+            ? `Scharnier für Alu-Rahmentüren ${mount} (Rahmenadapter passend zum Profil)`
+            : sec.surface === 'glass-clear'
             ? `Glastürscharnier ${mount} (Glas 4–6 mm, Bohrungen vom Glaser)`
             : sec.surface === 'oak' && T > 24
               ? `Topfscharnier 110° ${mount} für Dickfronten`

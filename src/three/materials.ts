@@ -41,6 +41,9 @@ export function createMaterials(): MaterialLib {
     'matt-fango': new THREE.MeshPhysicalMaterial({ color: 0xa6988c, roughness: 0.42, clearcoat: 0.25, clearcoatRoughness: 0.55 }),
     black: new THREE.MeshStandardMaterial({ color: 0x1c1c1c, roughness: 0.75 }),
     steel: new THREE.MeshStandardMaterial({ color: 0x1b1b1b, roughness: 0.45, metalness: 0.7 }),
+    'metal-alu': new THREE.MeshStandardMaterial({ color: 0xc9ccce, roughness: 0.35, metalness: 0.9 }),
+    'metal-black': new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.4, metalness: 0.6 }),
+    'metal-bronze': new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.38, metalness: 0.85 }),
     led,
   };
 
