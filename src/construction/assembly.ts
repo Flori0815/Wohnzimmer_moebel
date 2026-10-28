@@ -59,7 +59,12 @@ export function assemblySteps(cfg: FurnitureConfig, res: BuildResult, drill: Dri
       ? [
           `Die Verkleidung steht vorne um die Frontstärke über den Korpus über, damit die Fronten bündig in ihr sitzen. Sichtbar bleibt nur die ${m.cladding} mm schmale Dielenkante.`,
           `Diese Kante mit einem ${m.edgeBand} mm Eiche-Anleimer abdecken (verdeckt die Mittellage der Diele). Anleimer auf Gehrung, auf die Verkleidungsteile leimen, bevor sie montiert werden.`,
-        ]
+          m.rim < m.cladding
+            ? `Sichtbarer Rand ${m.rim} mm: an der Vorderkante der vorderen Dielen innen einen Falz ${m.cladding - m.rim} mm breit fräsen, so tief wie der Überstand vor dem Korpus (Maß lt. Zuschnittliste). Die Fronten greifen in diesen Falz. Fräsen vor dem Anleimen, an den Gehrungen den Falz mitlaufen lassen.`
+            : m.rim > m.cladding
+              ? `Sichtbarer Rand ${m.rim} mm: vor die Korpuskante eine Eiche-Blende ${m.rim - m.cladding} mm breit leimen, damit der Rand breiter wird als die Diele.`
+              : '',
+        ].filter(Boolean)
       : [
           `Eiche-Anleimer (${m.edgeBand} mm) an alle sichtbaren Vorderkanten: Seiten und Deckel/Boden decken Korpus + Parkett ab (${m.carcass + m.cladding} mm breit).`,
           'Nur mit dem Multiplex verleimen, zur Diele hin trocken stoßen. Mit Übermaß anleimen und danach bündig fräsen.',

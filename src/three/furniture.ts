@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { Axis, BuildResult, Motion, Part } from '../model/types';
 import type { MaterialLib } from './materials';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { hash, rng } from './textures';
 
 export const MM = 0.001;
@@ -11,9 +12,29 @@ const AXES: Axis[] = ['x', 'y', 'z'];
  * Box geometry whose UVs are in real-world millimetres divided by the texture size,
  * with u following the grain. Gives correct wood scale on every face of every part.
  */
-function woodBox(part: Part, scale: [number, number]): THREE.BoxGeometry {
+/** Part geometry centred on the part: a plain box, or two boxes for a rebated plank. */
+function partGeometry(part: Part): THREE.BufferGeometry {
   const [sx, sy, sz] = part.size;
-  const geo = new THREE.BoxGeometry(sx, sy, sz);
+  const r = part.rebate;
+  const zCut = r ? r.zFrom - part.pos[2] : sz;
+  if (!r || zCut <= 0 || zCut >= sz) return new THREE.BoxGeometry(sx, sy, sz);
+  const a = AXES.indexOf(r.axis);
+  // body behind the rebate (full thickness)
+  const body = new THREE.BoxGeometry(sx, sy, zCut);
+  body.translate(0, 0, -sz / 2 + zCut / 2);
+  // remaining outer band in front of it
+  const lipSize: [number, number, number] = [sx, sy, sz - zCut];
+  lipSize[a] = r.keep;
+  const lip = new THREE.BoxGeometry(...lipSize);
+  const off: [number, number, number] = [0, 0, sz / 2 - (sz - zCut) / 2];
+  const half = part.size[a] / 2;
+  off[a] = r.outerAtMin ? -half + r.keep / 2 : half - r.keep / 2;
+  lip.translate(...off);
+  return mergeGeometries([body, lip])!;
+}
+
+function woodBox(part: Part, scale: [number, number]): THREE.BufferGeometry {
+  const geo = partGeometry(part);
   const pos = geo.attributes.position;
   const nrm = geo.attributes.normal;
   const uv = geo.attributes.uv;
@@ -60,7 +81,7 @@ export function buildFurnitureView(res: BuildResult, mats: MaterialLib, ledOn: b
   const geos: THREE.BufferGeometry[] = [];
   for (const part of res.parts) {
     const scale = mats.woodScale(part.material);
-    const geo = scale ? woodBox(part, scale) : new THREE.BoxGeometry(...part.size);
+    const geo = scale ? woodBox(part, scale) : partGeometry(part);
     geos.push(geo);
     const mesh = new THREE.Mesh(geo, mats.get(part.material, part.id));
     mesh.name = part.id;

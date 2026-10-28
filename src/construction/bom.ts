@@ -82,6 +82,12 @@ function noteFor(p: Part, cfg: FurnitureConfig): string {
   const notes: string[] = [];
   if (p.cut?.miter?.length) notes.push(`Gehrung 45°: ${p.cut.miter.join(', ')}`);
   if (p.group === 'verkleidung') notes.push('Nut/Feder an Außenkanten abtrennen; Muffen lt. Bohrbild');
+  if (p.rebate) {
+    const width = (p.cut?.thickness ?? 0) - p.rebate.keep;
+    const depth = p.pos[2] + p.size[2] - p.rebate.zFrom;
+    notes.push(`Falz ${fmt(width)} × ${fmt(depth)} mm an der Vorderkante innen fräsen (Restdicke ${fmt(p.rebate.keep)} mm)`);
+  }
+  if (p.id.startsWith('bl-')) notes.push('Blende vor der Korpuskante, mit dem Korpus verleimen');
   if (p.group === 'auskleidung') notes.push('von außen durch den Korpus schrauben, bevor die Verkleidung kommt');
   if (p.id.startsWith('al-') && cfg.materials.frontStyle === 'overlay') notes.push('deckt die Dielenkante (Mittellage) ab');
   if (p.id.startsWith('ul-')) notes.push('auf die Multiplexkante hinter dem Klarglas');

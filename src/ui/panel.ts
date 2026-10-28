@@ -190,6 +190,9 @@ export function renderPanel(root: HTMLElement, host: PanelHost) {
     h('div', { class: 'grid2' },
       selectField('Frontausbildung', m.frontStyle, [['overlay', 'Lago: Fronten bündig in der Verkleidung'], ['inset', 'einliegend mit Eichenrahmen']], set((v: 'overlay' | 'inset') => (m.frontStyle = v), true)),
       selectField('Vitrinenfächer innen', m.lining, [['parkett', 'mit Dielen ausgekleidet'], ['none', 'ohne Auskleidung']], set((v: 'parkett' | 'none') => (m.lining = v), true)),
+      m.frontStyle === 'overlay'
+        ? numberField('Sichtbarer Rand', m.rim, set((v) => (m.rim = v)), { min: 2, max: m.cladding + m.carcass - 5, unit: 'mm', hint: m.rim < m.cladding ? `Falz ${m.cladding - m.rim} mm in der Diele` : m.rim > m.cladding ? `Blende ${m.rim - m.cladding} mm vor dem Korpus` : 'ohne Falz' })
+        : null,
       m.lining === 'parkett' ? numberField('Auskleidung Stärke', m.liningThickness, set((v) => (m.liningThickness = v)), { min: 4, max: 20, unit: 'mm' }) : null,
     ),
     h('p', { class: 'hint' }, 'Lago-Stil: Die Fronten decken den Multiplex-Korpus komplett ab. Die Parkettverkleidung steht vorne um die Frontstärke über, sichtbar bleibt nur ihre schmale Kante. Klarglas- und offene Fächer werden innen mit Dielen ausgekleidet, damit kein Multiplex zu sehen ist.'),

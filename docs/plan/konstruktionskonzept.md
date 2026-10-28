@@ -79,10 +79,28 @@ Ringsum bleibt eine schmale Eichenkante. Umsetzung:
   so den Rahmen, in dem die Fronten bündig sitzen.
 - Die Fronten liegen auf dem Korpus auf: an den Seiten voll aufliegend, an Mittelwänden und Zwischenböden halb
   aufliegend (Fuge in der Mitte der Wand). Fugen 3 mm, grifflos über Push-to-open (Tip-On).
+- **Sichtbarer Rand frei wählbar** (App: „Sichtbarer Rand“, Standard 10 mm):
+  - *Rand kleiner als die Diele* (z. B. 10 mm bei 14-mm-Diele): An der Vorderkante der Verkleidung wird innen ein
+    **Falz** gefräst (Breite = Dielenstärke − Rand, Tiefe = Überstand vor dem Korpus). Es bleibt nur ein schmaler
+    Steg in Randstärke stehen. Die Fronten wachsen in den Falz hinein und überdecken die Korpusseite entsprechend
+    mehr.
+  - *Rand größer als die Diele*: Vor die Korpuskante kommt eine **Eiche-Blende** (Rand − Dielenstärke breit). Die
+    Fronten werden schmaler.
+  - Der Anleimer vorne hat immer genau die Randbreite.
+
+```
+ Draufsicht, Ecke vorne links, Rand 10 mm bei 14-mm-Diele
+   außen ║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█     ← Anleimer 10 mm breit
+         ║▓▓▓▓·  Falz 4 mm  ░░░░░░░░░░ Front reicht bis 3 mm an den Steg
+         ║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+         ║▓▓▒▒▒▒▒▒▒▒ Korpus
+```
 - ⚠ **Scharnier-Kollision prüfen:** Aufliegende Türen schwenken beim Öffnen etwas nach außen. Die überstehende
   Verkleidung steht im Weg, wenn die Fuge zu klein ist. Vor dem Bau eine Tür als Muster mit dem gewählten Scharnier
   testen. Abhilfe: größere Fuge zur Verkleidung (4–5 mm), Scharnier mit Nullanschlag oder 155°-Scharnier, oder die
-  Verkleidung vorne leicht zurücksetzen (Einstellung „Front zurückgesetzt“).
+  Verkleidung vorne leicht zurücksetzen (Einstellung „Front zurückgesetzt“). Je schmaler der Rand, desto weiter
+  überdecken die Türen die Korpusseite (Rand 10 mm → ca. 19 mm Überdeckung). Ab etwa 18 mm braucht es Scharniere
+  für große Überdeckung; die App weist darauf hin.
 - **Mattglas-Fronten (geschlossen, wie Lago):** satiniertes, rückseitig lackiertes Glas 4 mm (z. B. „Matelac“-Typ,
   weiß / anthrazit / fango) vollflächig mit Spiegelkleber auf eine Trägertür aus Multiplex 15 mm geklebt
   (Gesamtstärke ca. 19 mm). Die Topfscharniere sitzen in der Trägerplatte. Glas und Multiplex arbeiten kaum,
