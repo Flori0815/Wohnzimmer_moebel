@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2b2622" />
+    <title>Lago Möbelkonfigurator</title>
+    <meta name="description" content="Standvitrine und Sideboard im Lago-Stil konfigurieren und in AR/VR im Raum ansehen." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='3' width='24' height='26' rx='2' fill='%23b07a45'/%3E%3Crect x='8' y='7' width='16' height='8' fill='%23ece9e3'/%3E%3Crect x='8' y='17' width='16' height='8' fill='%23ece9e3'/%3E%3C/svg%3E" />
+    <script type="module" crossorigin src="./assets/index-CmnbPZ-0.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-p97xeZEZ.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand"><strong>Lago</strong> Möbelkonfigurator</div>
+      <nav class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="konfig" role="tab">Konfigurator</button>
+        <button type="button" class="tab" data-tab="bau" role="tab">Konstruktion &amp; Stückliste</button>
+      </nav>
+      <div class="xr-buttons">
+        <button type="button" id="btn-ar" class="primary" hidden>AR – im Raum ansehen</button>
+        <button type="button" id="btn-ql" class="primary" hidden>AR (iPhone/iPad)</button>
+        <button type="button" id="btn-vr" hidden>VR</button>
+        <button type="button" id="btn-menu" class="menu" title="Speichern / Export">⋯</button>
+      </div>
+    </header>
+    <div id="menu" class="menu-pop" hidden></div>
+    <main id="app">
+      <aside id="panel" class="panel"></aside>
+      <section id="stage" class="stage">
+        <div id="viewport" class="viewport"></div>
+        <div class="toolbar">
+          <label class="tool"><input type="checkbox" id="opt-dims" checked /> Maße</label>
+          <label class="tool"><input type="checkbox" id="opt-led" checked /> LED</label>
+          <label class="tool"><input type="checkbox" id="opt-room" checked /> Raum</label>
+          <label class="tool slider">Türen <input type="range" id="opt-open" min="0" max="1" step="0.01" value="0" /></label>
+          <button type="button" class="tool" id="btn-frame" title="Ansicht zentrieren">⌖</button>
+        </div>
+        <div id="warnings" class="warnings" hidden></div>
+        <div id="toast" class="toast" hidden></div>
+      </section>
+      <section id="bau" class="bau" hidden></section>
+    </main>
+    <div id="xr-overlay" class="xr-overlay" hidden>
+      <div class="xr-gesture"></div>
+      <div id="xr-hint" class="xr-hint"></div>
+      <div class="xr-controls">
+        <button type="button" id="xr-left">⟲ 15°</button>
+        <button type="button" id="xr-doors">Türen</button>
+        <button type="button" id="xr-right">⟳ 15°</button>
+        <button type="button" id="xr-scale">1:1</button>
+        <button type="button" id="xr-replace">Neu platzieren</button>
+        <button type="button" id="xr-exit" class="danger">Beenden</button>
+      </div>
+    </div>
+  </body>
+</html>
