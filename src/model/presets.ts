@@ -12,7 +12,10 @@ export const defaultMaterials: Materials = {
   cladding: 14,
   plankWidth: 190,
   plankLength: 2200,
-  edgeBand: 8,
+  edgeBand: 5,
+  frontStyle: 'overlay',
+  lining: 'parkett',
+  liningThickness: 10,
   sideGrain: 'vertical',
   topGrain: 'horizontal',
   corner: 'miter',
@@ -23,7 +26,7 @@ export const defaultMaterials: Materials = {
   clearGlass: 6,
   woodFront: 26,
   shelfGlass: 8,
-  interior: 'oak',
+  interior: 'multiplex',
 };
 
 export function section(partial: Partial<Section> = {}): Section {

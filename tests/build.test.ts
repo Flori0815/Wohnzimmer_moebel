@@ -92,3 +92,40 @@ describe('layout', () => {
     expect(sides[0].size[2]).toBe(450);
   });
 });
+
+describe('Lago overlay fronts', () => {
+  const cfg = vitrinePreset();
+  const res = buildFurniture(cfg);
+  const m = cfg.materials;
+
+  it('puts the fronts flush with the cladding edge', () => {
+    const fronts = res.parts.filter((p) => p.motion && (p.group === 'glas' || p.group === 'front'));
+    const frontFace = Math.max(...fronts.map((p) => p.pos[2] + p.size[2]));
+    expect(frontFace).toBeCloseTo(cfg.depth - m.frontSetback, 6);
+    const lip = res.parts.find((p) => p.id === 'al-l')!;
+    expect(lip.size[0]).toBe(m.cladding);
+    expect(lip.pos[2] + lip.size[2]).toBe(cfg.depth);
+  });
+
+  it('covers the whole carcass front with fronts (only gaps between them)', () => {
+    const doors = res.parts.filter((p) => p.id.startsWith('tuer-') && !p.id.endsWith('-tr'));
+    const area = doors.reduce((s, p) => s + p.size[0] * p.size[1], 0);
+    const opening = (cfg.width - 2 * m.cladding) * (cfg.height - cfg.base.height - 2 * m.cladding);
+    expect(area / opening).toBeGreaterThan(0.97);
+  });
+
+  it('lines only the clear-glass compartment with parquet', () => {
+    const lining = res.parts.filter((p) => p.group === 'auskleidung');
+    expect(lining.length).toBeGreaterThanOrEqual(5);
+    expect(new Set(lining.map((p) => p.sec))).toEqual(new Set([1]));
+    expect(lining.every((p) => p.cut!.thickness === m.liningThickness)).toBe(true);
+  });
+
+  it('keeps the inset style available', () => {
+    const inset = vitrinePreset();
+    inset.materials.frontStyle = 'inset';
+    const r = buildFurniture(inset);
+    expect(r.warnings.filter((w) => w.level === 'error')).toEqual([]);
+    expect(r.parts.some((p) => p.id.startsWith('al-zb-'))).toBe(true);
+  });
+});

@@ -45,7 +45,7 @@ export function stockOf(p: Part): StockKind {
   }
 }
 
-export function materialName(p: Part, cfg: FurnitureConfig): string {
+export function materialName(p: Part, _cfg: FurnitureConfig): string {
   const t = p.cut?.thickness ?? 0;
   switch (p.material) {
     case 'multiplex':
@@ -55,7 +55,7 @@ export function materialName(p: Part, cfg: FurnitureConfig): string {
     case 'black':
       return `Multiplex Birke ${t} mm, schwarz lackiert`;
     case 'oak':
-      return `Landhausdiele Eiche ${cfg.materials.cladding} mm`;
+      return `Landhausdiele Eiche ${t} mm`;
     case 'oak-solid':
       return 'Eiche massiv';
     case 'endgrain':
@@ -69,7 +69,7 @@ export function materialName(p: Part, cfg: FurnitureConfig): string {
   }
 }
 
-const GROUP_ORDER: PartGroup[] = ['korpus', 'rueckwand', 'boden', 'front', 'schubkasten', 'sockel', 'verkleidung', 'anleimer', 'glas', 'applikation', 'led'];
+const GROUP_ORDER: PartGroup[] = ['korpus', 'rueckwand', 'boden', 'front', 'schubkasten', 'sockel', 'verkleidung', 'auskleidung', 'anleimer', 'glas', 'applikation', 'led'];
 const STOCK_ORDER: StockKind[] = ['multiplex', 'parkett', 'massivholz', 'glas', 'hirnholz', 'stahl', 'led'];
 
 function grainText(p: Part): string {
@@ -82,6 +82,9 @@ function noteFor(p: Part, cfg: FurnitureConfig): string {
   const notes: string[] = [];
   if (p.cut?.miter?.length) notes.push(`Gehrung 45°: ${p.cut.miter.join(', ')}`);
   if (p.group === 'verkleidung') notes.push('Nut/Feder an Außenkanten abtrennen; Muffen lt. Bohrbild');
+  if (p.group === 'auskleidung') notes.push('von außen durch den Korpus schrauben, bevor die Verkleidung kommt');
+  if (p.id.startsWith('al-') && cfg.materials.frontStyle === 'overlay') notes.push('deckt die Dielenkante (Mittellage) ab');
+  if (p.id.startsWith('ul-')) notes.push('auf die Multiplexkante hinter dem Klarglas');
   if (p.id === 'rueckwand') notes.push(`in Falz ${Math.floor(cfg.materials.carcass / 2)} mm`);
   if (p.group === 'boden' && stockOf(p) === 'multiplex') notes.push('Vorderkante Eiche-Umleimer 2 mm');
   if (p.group === 'glas' && p.material === 'glass-clear' && p.name.startsWith('Tür')) notes.push('Kanten poliert, Scharnierbohrungen lt. Beschlag');

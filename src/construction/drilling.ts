@@ -1,4 +1,4 @@
-import { frontThickness } from '../model/build';
+import { frontThickness, isVisibleInside } from '../model/build';
 import type { Axis, BuildResult, FurnitureConfig, Part } from '../model/types';
 
 /** In-plane coordinate system of a carcass panel drawing (inside view). */
@@ -154,23 +154,30 @@ export function computeDrilling(cfg: FurnitureConfig, res: BuildResult): DrillRe
         { side: 'left' as const, wall: leftWall(o.col) },
         { side: 'right' as const, wall: rightWall(o.col) },
       ];
-      const dh = o.h - 2 * m.frontGap;
-      const k = hingeCount(dh);
-      const type =
-        sec.surface === 'glass-clear'
-          ? 'Glastürscharnier einliegend (Glas 4–6 mm, Bohrungen vom Glaser)'
-          : sec.surface === 'oak' && T > 24
-            ? 'Topfscharnier 110° einliegend für Dickfronten'
-            : 'Topfscharnier 110° einliegend, Topf Ø 35';
+      const overlay = m.frontStyle === 'overlay';
+      const lined = m.lining === 'parkett' && isVisibleInside(sec) ? m.liningThickness : 0;
       for (const d of doors) {
+        const door = res.parts.find((p) => p.id.startsWith(`tuer-${o.col}-${o.sec}${doors.length > 1 ? (d.side === 'left' ? '-l' : '-r') : ''}`));
+        const dy0 = door ? door.pos[1] : o.y + m.frontGap;
+        const dh = door ? door.size[1] : o.h - 2 * m.frontGap;
+        const k = hingeCount(dh);
+        const onSide = d.wall.startsWith('seite');
+        const mount = overlay ? (onSide ? 'aufliegend' : 'halb aufliegend (Mittelwand)') : 'einliegend';
+        const type =
+          (sec.surface === 'glass-clear'
+            ? `Glastürscharnier ${mount} (Glas 4–6 mm, Bohrungen vom Glaser)`
+            : sec.surface === 'oak' && T > 24
+              ? `Topfscharnier 110° ${mount} für Dickfronten`
+              : `Topfscharnier 110° ${mount}, Topf Ø 35`) + (lined ? `, Montageplatte +${lined} mm (Auskleidung)` : '');
         hinges.push({ door: `Spalte ${o.col + 1}, Fach ${o.sec + 1}${doors.length > 1 ? ` (${d.side === 'left' ? 'links' : 'rechts'})` : ''}`, count: k, side: d.side === 'left' ? 'links' : 'rechts', height: dh, type });
         const v = wallView(d.wall);
         if (!v) continue;
-        const y0 = o.y + m.frontGap + 100;
-        const y1 = o.y + o.h - m.frontGap - 100;
+        const y0 = dy0 + 100;
+        const y1 = dy0 + dh - 100;
+        const zPlate = (overlay ? res.inner.zFront : zDoorBack) - 37;
         for (let i = 0; i < k; i++) {
           const y = k === 1 ? (y0 + y1) / 2 : y0 + (i * (y1 - y0)) / (k - 1);
-          holes.push({ panel: d.wall, kind: 'scharnier', h: zDoorBack - 37 - v.h0, v: y - v.v0 });
+          holes.push({ panel: d.wall, kind: 'scharnier', h: zPlate - v.h0, v: y - v.v0 });
         }
       }
     }
