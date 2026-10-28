@@ -27,7 +27,8 @@ Klarglas-Vitrinenfächer mit LED, Hirnholz-Applikationen.
 - Hirnholz-Kacheln frei platzierbar (Warnung, wenn eine Kachel über eine Türfuge ragt)
 - Materialstärken (Multiplex, Parkett, Anleimer, Glas), Dielenbreite, Faserrichtung, Gehrung/stumpf
 - Maßketten, Türen öffnen, LED an/aus, Raum mit einstellbaren Maßen
-- **AR** (Android/Chrome, Meta Quest): Möbel per Tippen auf den echten Boden stellen, drehen, Türen öffnen
+- **AR** (Android/Chrome, Meta Quest): Möbel per Tippen auf den echten Boden stellen, danach mit 1 Finger verschieben,
+  mit 2 Fingern zoomen und drehen, „1:1“ für Originalgröße, „Neu platzieren“, Türen öffnen
 - **AR Quick Look** (iPhone/iPad) über USDZ, **VR** (Quest) im virtuellen Raum 1:1
 - Teilen-Link, JSON speichern/laden, GLB/USDZ/PNG-Export
 
