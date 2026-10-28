@@ -122,8 +122,7 @@ export class Viewer {
   setOptions(o: Partial<ViewOptions>) {
     const prev = this.opts;
     this.opts = { ...this.opts, ...o };
-    if (this.dims) this.dims.visible = this.opts.dimensions && !this.renderer.xr.isPresenting;
-    this.roomGroup.visible = this.opts.room;
+    this.applyVisibility();
     if (prev.led !== this.opts.led) this.mats.setLed(this.opts.led);
     if (prev.offsetX !== this.opts.offsetX || prev.led !== this.opts.led) this.refresh();
   }
@@ -172,8 +171,8 @@ export class Viewer {
     this.holder.add(this.view.group);
     this.dims = buildDimensions(cfg, res);
     this.dims.scale.setScalar(MM);
-    this.dims.visible = this.opts.dimensions && !this.renderer.xr.isPresenting;
     this.holder.add(this.dims);
+    this.applyVisibility();
 
     // holder: furniture origin (back-left corner) relative to the footprint centre
     this.holder.position.set((-cfg.width / 2) * MM, 0, (-cfg.depth / 2) * MM);
@@ -190,12 +189,17 @@ export class Viewer {
 
   xrMode: 'none' | 'ar' | 'vr' = 'none';
 
+  /** Single place that decides what is shown – AR must never show the virtual room. */
+  private applyVisibility() {
+    const v = sceneVisibility(this.xrMode, this.opts);
+    this.roomGroup.visible = v.room;
+    this.scene.background = v.background ? this.background : null;
+    if (this.dims) this.dims.visible = v.dimensions;
+  }
+
   setXrMode(mode: 'none' | 'ar' | 'vr') {
     this.xrMode = mode;
-    const ar = mode === 'ar';
-    this.scene.background = ar ? null : this.background;
-    this.roomGroup.visible = !ar && this.opts.room;
-    if (this.dims) this.dims.visible = mode === 'none' && this.opts.dimensions;
+    this.applyVisibility();
     if (mode === 'none') {
       this.world.position.set(0, 0, 0);
       this.placeInRoom();
@@ -276,6 +280,15 @@ export class Viewer {
     this.renderer.render(this.scene, this.camera);
     return this.renderer.domElement.toDataURL('image/png');
   }
+}
+
+/** What is visible for a given XR mode (pure, unit-tested). */
+export function sceneVisibility(mode: 'none' | 'ar' | 'vr', opts: Pick<ViewOptions, 'room' | 'dimensions'>) {
+  return {
+    room: mode !== 'ar' && opts.room,
+    background: mode !== 'ar',
+    dimensions: mode === 'none' && opts.dimensions,
+  };
 }
 
 function disposeTree(obj: THREE.Object3D) {

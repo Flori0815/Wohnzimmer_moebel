@@ -53,10 +53,17 @@ export class XrController {
     });
     const r = this.viewer.renderer;
     r.xr.setReferenceSpaceType('local');
-    await r.xr.setSession(session);
-    this.session = session;
+    // Hide the virtual room before the first AR frame is drawn.
     this.viewer.setXrMode('ar');
     this.viewer.anchor.visible = false;
+    try {
+      await r.xr.setSession(session);
+    } catch (e) {
+      this.viewer.anchor.visible = true;
+      this.viewer.setXrMode('none');
+      throw e;
+    }
+    this.session = session;
     const viewerSpace = await session.requestReferenceSpace('viewer');
     this.hitSource = (await session.requestHitTestSource?.({ space: viewerSpace })) ?? null;
     session.addEventListener('select', () => this.placeAtReticle());
