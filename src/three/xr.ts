@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { pinchTwist, snapScale, twoFinger, type TwoFinger } from './gestures';
 import type { Viewer } from './viewer';
 
 export interface XrSupport {
@@ -17,7 +18,8 @@ export async function detectXr(): Promise<XrSupport> {
 }
 
 /**
- * AR: furniture is placed on a detected floor via hit-test; tap to place, buttons to rotate.
+ * AR: furniture is placed on a detected floor via hit-test (tap). Afterwards one finger drags it
+ *     over the floor, two fingers pinch to scale and twist to rotate; buttons rotate / reset.
  * VR: the virtual room is shown 1:1, the user starts ~1.8 m in front of the furniture;
  *     the controller trigger opens/closes the doors.
  */
@@ -26,6 +28,10 @@ export class XrController {
   private hitSource: XRHitTestSource | null = null;
   private readonly reticle: THREE.Mesh;
   private controllers: THREE.Group[] = [];
+  private placed = false;
+  private readonly raycaster = new THREE.Raycaster();
+  private drag: { offset: THREE.Vector3 } | null = null;
+  private pinch: { start: TwoFinger; base: { scale: number; yaw: number } } | null = null;
 
   constructor(
     private readonly viewer: Viewer,
@@ -38,6 +44,16 @@ export class XrController {
     this.reticle.visible = false;
     viewer.scene.add(this.reticle);
     viewer.onFrame = (frame) => this.frame(frame);
+
+    // Taps on buttons never place; once placed, touches are gestures, not "place here".
+    overlay.addEventListener('beforexrselect', (e) => {
+      if ((e.target as HTMLElement).closest('button') || this.placed) e.preventDefault();
+    });
+    const layer = overlay.querySelector<HTMLElement>('.xr-gesture') ?? overlay;
+    layer.addEventListener('touchstart', (e) => this.touch(e), { passive: false });
+    layer.addEventListener('touchmove', (e) => this.touch(e), { passive: false });
+    layer.addEventListener('touchend', (e) => this.touch(e), { passive: false });
+    layer.addEventListener('touchcancel', (e) => this.touch(e), { passive: false });
   }
 
   get active(): boolean {
@@ -56,6 +72,8 @@ export class XrController {
     // Hide the virtual room before the first AR frame is drawn.
     this.viewer.setXrMode('ar');
     this.viewer.anchor.visible = false;
+    this.viewer.anchor.scale.setScalar(1);
+    this.placed = false;
     try {
       await r.xr.setSession(session);
     } catch (e) {
@@ -109,6 +127,70 @@ export class XrController {
     this.viewer.anchor.rotation.y += (deg * Math.PI) / 180;
   }
 
+  /** Back to real size. */
+  resetScale() {
+    this.viewer.anchor.scale.setScalar(1);
+    this.hint();
+  }
+
+  /** Hide the furniture and show the reticle again to place it anew. */
+  replace() {
+    this.placed = false;
+    this.drag = this.pinch = null;
+    this.viewer.anchor.visible = false;
+    this.onState('ar', 'Kamera auf den Boden richten, Ring erscheint – tippen zum Platzieren.');
+  }
+
+  private hint() {
+    const pct = Math.round(this.viewer.anchor.scale.x * 100);
+    this.onState('ar', `1 Finger: verschieben · 2 Finger: zoomen & drehen · Maßstab ${pct} %${pct === 100 ? ' (Originalgröße)' : ''}`);
+  }
+
+  /** Point on the floor plane (at the furniture's height) under a screen position. */
+  private floorPoint(x: number, y: number): THREE.Vector3 | null {
+    const xrCam = this.viewer.renderer.xr.getCamera();
+    const cam = xrCam.cameras?.[0] ?? xrCam;
+    const ndc = new THREE.Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
+    this.raycaster.setFromCamera(ndc, cam);
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -this.viewer.anchor.position.y);
+    return this.raycaster.ray.intersectPlane(plane, new THREE.Vector3());
+  }
+
+  private touch(e: TouchEvent) {
+    if (!this.session || !this.placed) return;
+    e.preventDefault();
+    const anchor = this.viewer.anchor;
+    const t = e.touches;
+    if (e.type === 'touchstart' || e.type === 'touchend' || e.type === 'touchcancel') {
+      // (re)start the gesture with whatever fingers remain on the screen
+      this.drag = null;
+      this.pinch = null;
+      if (t.length === 1) {
+        const p = this.floorPoint(t[0].clientX, t[0].clientY);
+        if (p) this.drag = { offset: anchor.position.clone().sub(p) };
+      } else if (t.length >= 2) {
+        this.pinch = {
+          start: twoFinger({ x: t[0].clientX, y: t[0].clientY }, { x: t[1].clientX, y: t[1].clientY }),
+          base: { scale: anchor.scale.x, yaw: anchor.rotation.y },
+        };
+      } else {
+        anchor.scale.setScalar(snapScale(anchor.scale.x));
+        this.hint();
+      }
+      return;
+    }
+    if (this.pinch && t.length >= 2) {
+      const now = twoFinger({ x: t[0].clientX, y: t[0].clientY }, { x: t[1].clientX, y: t[1].clientY });
+      const r = pinchTwist(this.pinch.start, now, this.pinch.base);
+      anchor.scale.setScalar(r.scale);
+      anchor.rotation.y = r.yaw;
+      this.hint();
+    } else if (this.drag && t.length === 1) {
+      const p = this.floorPoint(t[0].clientX, t[0].clientY);
+      if (p) anchor.position.set(p.x + this.drag.offset.x, anchor.position.y, p.z + this.drag.offset.z);
+    }
+  }
+
   private placeAtReticle() {
     if (!this.reticle.visible) return;
     const p = new THREE.Vector3().setFromMatrixPosition(this.reticle.matrix);
@@ -119,11 +201,16 @@ export class XrController {
     const cp = new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld);
     anchor.rotation.set(0, Math.atan2(cp.x - p.x, cp.z - p.z), 0);
     anchor.visible = true;
-    this.onState('ar', 'Erneut tippen zum Versetzen. Drehen mit den Pfeilen.');
+    this.placed = true;
+    this.hint();
   }
 
   private frame(frame?: XRFrame) {
     if (!frame || !this.hitSource) return;
+    if (this.placed) {
+      this.reticle.visible = false;
+      return;
+    }
     const ref = this.viewer.renderer.xr.getReferenceSpace();
     if (!ref) return;
     const hits = frame.getHitTestResults(this.hitSource);
@@ -144,7 +231,10 @@ export class XrController {
     this.session = null;
     this.reticle.visible = false;
     for (const c of this.controllers) c.removeFromParent();
+    this.placed = false;
+    this.drag = this.pinch = null;
     this.viewer.anchor.visible = true;
+    this.viewer.anchor.scale.setScalar(1);
     this.viewer.setXrMode('none');
     this.onState('none');
   }

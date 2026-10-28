@@ -169,8 +169,9 @@ main { flex: 1; display: flex; min-height: 0; }
 }
 
 .xr-overlay { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; }
-.xr-hint { align-self: center; background: rgba(0, 0, 0, 0.6); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 15px; text-align: center; }
-.xr-controls { display: flex; gap: 8px; justify-content: center; pointer-events: auto; flex-wrap: wrap; }
+.xr-gesture { position: absolute; inset: 0; pointer-events: auto; touch-action: none; }
+.xr-hint { position: relative; align-self: center; background: rgba(0, 0, 0, 0.6); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 15px; text-align: center; }
+.xr-controls { position: relative; display: flex; gap: 8px; justify-content: center; pointer-events: auto; flex-wrap: wrap; }
 .xr-controls button { font-size: 17px; padding: 12px 16px; background: rgba(255, 255, 255, 0.9); }
 
 .bau { flex: 1; overflow: auto; background: var(--bg); }

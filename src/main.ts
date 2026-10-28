@@ -189,8 +189,8 @@ $('xr-left').addEventListener('click', () => xr.rotate(15));
 $('xr-right').addEventListener('click', () => xr.rotate(-15));
 $('xr-doors').addEventListener('click', () => viewer.toggleDoors());
 $('xr-exit').addEventListener('click', () => xr.end());
-// Taps on overlay buttons must not also trigger "place" via the XR select event.
-overlay.addEventListener('beforexrselect', (e) => e.preventDefault());
+$('xr-scale').addEventListener('click', () => xr.resetScale());
+$('xr-replace').addEventListener('click', () => xr.replace());
 
 detectXr().then((s) => {
   const ar = $('btn-ar');
