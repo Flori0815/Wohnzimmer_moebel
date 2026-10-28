@@ -31,6 +31,18 @@ Klarglas-Vitrinenfächer mit LED, Hirnholz-Applikationen.
 - **AR Quick Look** (iPhone/iPad) über USDZ, **VR** (Quest) im virtuellen Raum 1:1
 - Teilen-Link, JSON speichern/laden, GLB/USDZ/PNG-Export
 
+**Stufe 2 – Konstruktion & Stückliste** (Reiter oben)
+
+- Zuschnittliste je Material (Multiplex, Landhausdielen, Eiche-Anleimer, Glas, Hirnholz) inkl. Gehrungen, CSV-Export
+- Dielenplan: Zuordnung der Verkleidungsteile auf Dielen, Dielenbedarf mit Verschnittzuschlag
+- Plattenplan: Zuschnittoptimierung auf frei wählbares Plattenformat
+- Beschlagliste: Einschraubmuffen + Schrauben + Scheiben, Scharniere je Tür, Push-to-open, Auszüge,
+  Bodenträger, LED, Unterbau, Kippsicherung, Oberfläche
+- Bohrpläne je Korpusteil (Innenansicht): Muffenraster mit Fixpunkt und Langlöchern, das Verbindungen,
+  Rückwandfalz, Scharnier-Montageplatten und Bodenträger-Lochreihen ausweicht
+- Muffenpositionen je Diele, Kachelpositionen, Montageablauf
+- Druckansicht → PDF
+
 AR/VR braucht HTTPS – auf GitHub Pages gegeben.
 
 ## Entwicklung
