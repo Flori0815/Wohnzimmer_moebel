@@ -103,6 +103,7 @@ for (const tab of document.querySelectorAll<HTMLButtonElement>('.tab')) {
     $('stage').hidden = activeTab !== 'konfig';
     panelEl.hidden = activeTab !== 'konfig';
     bauEl.hidden = activeTab !== 'bau';
+    viewer.paused = activeTab !== 'konfig';
     if (activeTab === 'bau') renderConstruction(bauEl, config, result);
   });
 }

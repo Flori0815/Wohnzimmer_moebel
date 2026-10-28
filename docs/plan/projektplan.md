@@ -27,7 +27,13 @@ src/
     xr.ts         WebXR: VR (Raum 1:1 begehbar) und AR (Hit-Test, per Tippen platzieren)
     export.ts     GLB- und USDZ-Export (USDZ = AR Quick Look auf iPhone/iPad)
   ui/           Konfigurations-Panel (DOM), Speichern/Laden/Teilen-Link
-  construction/ (Stufe 2) Stückliste, Zuschnittoptimierung, Bohrbilder, Montageanleitung
+  construction/ (Stufe 2)
+    bom.ts        Zuschnittliste, CSV, Gewicht
+    packing.ts    Dielen- und Plattenoptimierung
+    drilling.ts   Muffenraster (Fixpunkt/Langloch), Bodenträger, Scharnier-Montageplatten
+    hardware.ts   Beschlag- und Materialliste
+    assembly.ts   Montageablauf
+    view.ts       Darstellung (Tabellen, SVG-Pläne, Druck)
 ```
 
 Kernidee: **Eine Quelle der Wahrheit.** `build.ts` erzeugt aus der Konfiguration eine vollständige Bauteilliste
@@ -65,9 +71,9 @@ Technik: Vite + TypeScript + three.js, Vitest für das Modell, GitHub Actions f�
 
 ## Vorgehen / Meilensteine
 
-1. **M0** Recherche + Plan im Repo (dieser Stand).
-2. **M1** Stufe 1 lauffähig, deployt auf GitHub Pages (PR → main).
-3. **M2** Stufe 2 Konstruktionshilfe (PR → main).
+1. **M0** Recherche + Plan im Repo – ✅ erledigt.
+2. **M1** Stufe 1 lauffähig, deployt auf GitHub Pages – ✅ erledigt (PR #1).
+3. **M2** Stufe 2 Konstruktionshilfe – ✅ erledigt (Reiter „Konstruktion & Stückliste“).
 4. Danach: Iteration nach Feedback (Probebau, Maße an echten Dielen/Beschlägen ausrichten).
 
 ## Offene Entscheidungen (mit Default in der App)

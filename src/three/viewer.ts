@@ -103,7 +103,11 @@ export class Viewer {
     this.camera.updateProjectionMatrix();
   }
 
+  /** Skip rendering while the 3D view is hidden (construction tab). */
+  paused = false;
+
   private tick(frame?: XRFrame) {
+    if (this.paused && !this.renderer.xr.isPresenting) return;
     // ease door animation
     const target = this.opts.open;
     if (Math.abs(this.openCurrent - target) > 0.001) {
