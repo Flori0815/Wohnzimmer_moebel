@@ -103,7 +103,7 @@ describe('Lago overlay fronts', () => {
     const frontFace = Math.max(...fronts.map((p) => p.pos[2] + p.size[2]));
     expect(frontFace).toBeCloseTo(cfg.depth - m.frontSetback, 6);
     const lip = res.parts.find((p) => p.id === 'al-l')!;
-    expect(lip.size[0]).toBe(m.cladding);
+    expect(lip.size[0]).toBe(m.rim);
     expect(lip.pos[2] + lip.size[2]).toBe(cfg.depth);
   });
 
@@ -127,5 +127,42 @@ describe('Lago overlay fronts', () => {
     const r = buildFurniture(inset);
     expect(r.warnings.filter((w) => w.level === 'error')).toEqual([]);
     expect(r.parts.some((p) => p.id.startsWith('al-zb-'))).toBe(true);
+  });
+});
+
+describe('visible rim of the cladding', () => {
+  const withRim = (rim: number) => {
+    const cfg = sideboardPreset();
+    cfg.materials.rim = rim;
+    return { cfg, res: buildFurniture(cfg) };
+  };
+
+  it('mills a rebate into the front planks when the rim is thinner than the cladding', () => {
+    const { cfg, res } = withRim(8);
+    const m = cfg.materials;
+    const rebated = res.parts.filter((p) => p.rebate);
+    expect(rebated.length).toBeGreaterThan(0);
+    for (const p of rebated) {
+      expect(p.group).toBe('verkleidung');
+      expect(p.rebate!.keep).toBe(8);
+      expect(p.pos[2] + p.size[2]).toBeCloseTo(cfg.depth - m.edgeBand, 6);
+    }
+    // the leftmost door starts right after rim + gap
+    const doors = res.parts.filter((p) => p.motion && p.group !== 'applikation');
+    expect(Math.min(...doors.map((p) => p.pos[0]))).toBeCloseTo(8 + m.frontGap, 6);
+    expect(res.parts.some((p) => p.id.startsWith('bl-'))).toBe(false);
+  });
+
+  it('adds a filler strip when the rim is wider than the cladding', () => {
+    const { cfg, res } = withRim(20);
+    expect(res.parts.some((p) => p.rebate)).toBe(false);
+    const filler = res.parts.find((p) => p.id === 'bl-l')!;
+    expect(filler.size[0]).toBe(20 - cfg.materials.cladding);
+    expect(res.parts.find((p) => p.id === 'al-l')!.size[0]).toBe(20);
+  });
+
+  it('needs neither when the rim equals the cladding thickness', () => {
+    const { res } = withRim(14);
+    expect(res.parts.some((p) => p.rebate || p.id.startsWith('bl-'))).toBe(false);
   });
 });

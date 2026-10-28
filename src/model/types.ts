@@ -79,6 +79,12 @@ export interface Materials {
   /** Solid oak lipping on the visible front edges (cladding edge, or whole frame when inset). */
   edgeBand: number;
   frontStyle: FrontStyle;
+  /**
+   * Visible rim of the cladding seen from the front (overlay style).
+   * < cladding: the cladding gets a rebate at its front edge and the fronts grow into it;
+   * > cladding: a solid oak filler strip covers part of the carcass edge.
+   */
+  rim: number;
   /** Parquet lining inside compartments with clear glass or open fronts (hides the Multiplex). */
   lining: Lining;
   liningThickness: number;
@@ -177,6 +183,11 @@ export interface Part {
   cut?: Cut;
   /** Motion group this part moves with (door, drawer). */
   motion?: string;
+  /**
+   * Rebate milled into the front end of a cladding plank: from z = zFrom to the front only a
+   * band of `keep` mm on the outer face remains (thickness along `axis`).
+   */
+  rebate?: { axis: Axis; outerAtMin: boolean; keep: number; zFrom: number };
   /** Column / section the part belongs to. */
   col?: number;
   sec?: number;

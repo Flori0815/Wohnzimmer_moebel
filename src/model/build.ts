@@ -144,19 +144,46 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
   const miter = m.corner === 'miter';
   const sideAlong: Axis = m.sideGrain === 'vertical' ? 'y' : 'z';
   const topAlong: Axis = m.topGrain === 'horizontal' ? 'x' : 'z';
-  cladPanel(parts, m.plankWidth, 'vk-l', 'Verkleidung links', [0, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
-  cladPanel(parts, m.plankWidth, 'vk-r', 'Verkleidung rechts', [W - c, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
-  cladPanel(parts, m.plankWidth, 'vk-o', 'Verkleidung oben', [c, yTop - c, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null);
-  cladPanel(parts, m.plankWidth, 'vk-u', 'Verkleidung unten', [c, yBottom, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null);
+  // visible rim from the front (overlay): rebate when thinner than the cladding, filler when wider
+  const R = overlay ? Math.min(Math.max(m.rim, 2), c + t - 5) : c;
+  if (overlay && R !== m.rim) warnings.push({ level: 'warn', text: `Sichtbarer Rand auf ${R} mm begrenzt (2 … ${c + t - 5} mm).` });
+  const clad = (id: string, name: string, pos: Vec3, size: Vec3, along: Axis, mit: MiterSpec | null, thick: Axis, outerAtMin: boolean) => {
+    const before = parts.length;
+    cladPanel(parts, m.plankWidth, id, name, pos, size, along, mit);
+    if (!overlay || R >= c) return;
+    for (let i = before; i < parts.length; i++) {
+      const p = parts[i];
+      if (p.pos[2] + p.size[2] < Dc - 0.5) continue; // plank does not reach the front
+      p.rebate = { axis: thick, outerAtMin, keep: R, zFrom: Dk };
+    }
+  };
+  clad('vk-l', 'Verkleidung links', [0, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null, 'x', true);
+  clad('vk-r', 'Verkleidung rechts', [W - c, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null, 'x', false);
+  clad('vk-o', 'Verkleidung oben', [c, yTop - c, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null, 'y', false);
+  clad('vk-u', 'Verkleidung unten', [c, yBottom, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null, 'y', true);
 
   // --- solid oak lipping on the front edges -------------------------------
   const zL = Dc;
   if (overlay) {
-    // only the parquet edge shows – a thin oak strip hides the 3-layer core
-    add({ id: 'al-l', name: 'Anleimer Verkleidung links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [c, bodyH, e], grain: 'y' });
-    add({ id: 'al-r', name: 'Anleimer Verkleidung rechts', group: 'anleimer', material: 'oak-solid', pos: [W - c, yBottom, zL], size: [c, bodyH, e], grain: 'y' });
-    add({ id: 'al-o', name: 'Anleimer Verkleidung oben', group: 'anleimer', material: 'oak-solid', pos: [c, yTop - c, zL], size: [Wk, c, e], grain: 'x' });
-    add({ id: 'al-u', name: 'Anleimer Verkleidung unten', group: 'anleimer', material: 'oak-solid', pos: [c, yBottom, zL], size: [Wk, c, e], grain: 'x' });
+    // only the rim shows – a thin oak strip hides the 3-layer core of the planks
+    add({ id: 'al-l', name: 'Anleimer Verkleidung links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [R, bodyH, e], grain: 'y' });
+    add({ id: 'al-r', name: 'Anleimer Verkleidung rechts', group: 'anleimer', material: 'oak-solid', pos: [W - R, yBottom, zL], size: [R, bodyH, e], grain: 'y' });
+    add({ id: 'al-o', name: 'Anleimer Verkleidung oben', group: 'anleimer', material: 'oak-solid', pos: [R, yTop - R, zL], size: [W - 2 * R, R, e], grain: 'x' });
+    add({ id: 'al-u', name: 'Anleimer Verkleidung unten', group: 'anleimer', material: 'oak-solid', pos: [R, yBottom, zL], size: [W - 2 * R, R, e], grain: 'x' });
+    if (R > c) {
+      // rim wider than the cladding: solid oak filler in front of the carcass edge
+      const f = R - c;
+      const fd = Dc - Dk;
+      add({ id: 'bl-l', name: 'Blende links', group: 'anleimer', material: 'oak-solid', pos: [c, yk, Dk], size: [f, Hk, fd], grain: 'y' });
+      add({ id: 'bl-r', name: 'Blende rechts', group: 'anleimer', material: 'oak-solid', pos: [W - R, yk, Dk], size: [f, Hk, fd], grain: 'y' });
+      add({ id: 'bl-o', name: 'Blende oben', group: 'anleimer', material: 'oak-solid', pos: [R, yTop - R, Dk], size: [W - 2 * R, f, fd], grain: 'x' });
+      add({ id: 'bl-u', name: 'Blende unten', group: 'anleimer', material: 'oak-solid', pos: [R, yk, Dk], size: [W - 2 * R, f, fd], grain: 'x' });
+    }
+    // how far the side doors reach over the carcass side (hinge must manage this)
+    const overlap = c + t - R - g;
+    if (overlap > 18) {
+      warnings.push({ level: 'info', text: `Türen überdecken die Korpusseite um ${Math.round(overlap)} mm – Scharnier mit großer Überdeckung wählen und Schwenkbereich im Falz testen.` });
+    }
   } else {
     add({ id: 'al-l', name: 'Anleimer links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
     add({ id: 'al-r', name: 'Anleimer rechts', group: 'anleimer', material: 'oak-solid', pos: [W - c - t, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
@@ -218,10 +245,10 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
         const lastCol = ci === nCols - 1;
         const lastSec = si === nSec - 1;
         r = {
-          x0: (ci === 0 ? c + g : xc - t / 2 + g / 2),
-          x1: (lastCol ? W - c - g : xc + cw + t / 2 - g / 2),
-          y0: (si === 0 ? yk + g : ys - t / 2 + g / 2),
-          y1: (lastSec ? yk + Hk - g : ys + sh + t / 2 - g / 2),
+          x0: (ci === 0 ? R + g : xc - t / 2 + g / 2),
+          x1: (lastCol ? W - R - g : xc + cw + t / 2 - g / 2),
+          y0: (si === 0 ? yBottom + R + g : ys - t / 2 + g / 2),
+          y1: (lastSec ? yTop - R - g : ys + sh + t / 2 - g / 2),
         };
       }
       const addPanel = (rect: Rect, id: string, label: string, motion: Motion, grain: Axis) => {

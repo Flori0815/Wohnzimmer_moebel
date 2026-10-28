@@ -14,6 +14,7 @@ export const defaultMaterials: Materials = {
   plankLength: 2200,
   edgeBand: 5,
   frontStyle: 'overlay',
+  rim: 10,
   lining: 'parkett',
   liningThickness: 10,
   sideGrain: 'vertical',
