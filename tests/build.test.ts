@@ -166,3 +166,39 @@ describe('visible rim of the cladding', () => {
     expect(res.parts.some((p) => p.rebate || p.id.startsWith('bl-'))).toBe(false);
   });
 });
+
+describe('metal frame on clear-glass doors', () => {
+  const framed = (width: number) => {
+    const cfg = vitrinePreset();
+    cfg.materials.glassFrame = 'black';
+    cfg.materials.glassFrameWidth = width;
+    return { cfg, res: buildFurniture(cfg) };
+  };
+
+  it('builds four mitred profiles around a smaller pane', () => {
+    const { cfg, res } = framed(25);
+    const m = cfg.materials;
+    const bars = res.parts.filter((p) => p.material === 'metal-black');
+    expect(bars).toHaveLength(4);
+    for (const b of bars) expect(b.cut!.miter).toEqual(['beide Enden']);
+    const pane = res.parts.find((p) => p.id === 'tuer-0-1')!;
+    const left = bars.find((b) => b.id.endsWith('-rl'))!;
+    // pane sits 5 mm deep in the groove on each side
+    expect(pane.size[0]).toBeCloseTo(res.parts.find((p) => p.id === 'tuer-0-1-rr')!.pos[0] + 25 - left.pos[0] - 2 * 25 + 10, 6);
+    expect(pane.size[2]).toBe(m.framedGlass);
+    // door thickness = profile depth, all moving with the door
+    expect(bars.every((b) => b.size[2] === m.glassFrameDepth && b.motion === pane.motion)).toBe(true);
+  });
+
+  it('follows the chosen frame width', () => {
+    const a = framed(15).res.parts.find((p) => p.id === 'tuer-0-1-rl')!;
+    const b = framed(40).res.parts.find((p) => p.id === 'tuer-0-1-rl')!;
+    expect(a.size[0]).toBe(15);
+    expect(b.size[0]).toBe(40);
+  });
+
+  it('leaves frameless glass doors unchanged by default', () => {
+    const res = buildFurniture(vitrinePreset());
+    expect(res.parts.some((p) => p.material.startsWith('metal-'))).toBe(false);
+  });
+});

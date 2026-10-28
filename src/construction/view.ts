@@ -42,7 +42,7 @@ const STOCK_TITLES: Record<StockKind, string> = {
   massivholz: 'Massivholz Eiche (Anleimer)',
   glas: 'Glas (beim Glaser bestellen)',
   hirnholz: 'Hirnholz-Applikation',
-  stahl: 'Stahl',
+  stahl: 'Metall (Stahl, Alu-Rahmenprofile)',
   led: 'LED',
 };
 

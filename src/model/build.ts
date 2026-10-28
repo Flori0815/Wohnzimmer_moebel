@@ -39,7 +39,7 @@ export function maxFrontThickness(cfg: FurnitureConfig): number {
 
 export function frontThickness(cfg: FurnitureConfig, surface: Surface): number {
   const m = cfg.materials;
-  if (surface === 'glass-clear') return m.clearGlass;
+  if (surface === 'glass-clear') return m.glassFrame === 'none' ? m.clearGlass : m.glassFrameDepth;
   if (surface === 'oak') return m.woodFront;
   return m.mattCarrier + m.mattGlass;
 }
@@ -475,6 +475,24 @@ function addFront(
   const h = r.y1 - r.y0;
   const T = frontThickness(cfg, surface);
   const base = { motion, col, sec };
+  if (surface === 'glass-clear' && m.glassFrame !== 'none') {
+    // aluminium frame door: four mitred profiles, glass held in a 5 mm groove
+    const fw = Math.min(m.glassFrameWidth, w / 3, h / 3);
+    const metal: MaterialKey = `metal-${m.glassFrame}`;
+    const z0 = zf - T;
+    const bar = (k: string, name: string, pos: Vec3, size: Vec3, grain: Axis, length: number) =>
+      parts.push({ id: `${id}-${k}`, name: `${label} Rahmenprofil ${name}`, group: 'front', material: metal, pos, size, grain, ...base, cut: { length: round1(length), width: round1(fw), thickness: round1(T), miter: ['beide Enden'] } });
+    bar('rl', 'links', [r.x0, r.y0, z0], [fw, h, T], 'y', h);
+    bar('rr', 'rechts', [r.x1 - fw, r.y0, z0], [fw, h, T], 'y', h);
+    bar('ru', 'unten', [r.x0 + fw, r.y0, z0], [w - 2 * fw, fw, T], 'x', w);
+    bar('ro', 'oben', [r.x0 + fw, r.y1 - fw, z0], [w - 2 * fw, fw, T], 'x', w);
+    const groove = Math.min(5, fw / 2);
+    const gw = w - 2 * fw + 2 * groove;
+    const gh = h - 2 * fw + 2 * groove;
+    const g = m.framedGlass;
+    parts.push({ id, name: `${label} (ESG klar, im Rahmen)`, group: 'glas', material: 'glass-clear', pos: [r.x0 + fw - groove, r.y0 + fw - groove, zf - T / 2 - g / 2], size: [gw, gh, g], ...base, cut: cutFromBox([gw, gh, g], 'y') });
+    return;
+  }
   if (surface === 'glass-clear') {
     parts.push({ id, name: `${label} (ESG klar)`, group: 'glas', material: 'glass-clear', pos: [r.x0, r.y0, zf - T], size: [w, h, T], ...base, cut: cutFromBox([w, h, T], 'y') });
     return;

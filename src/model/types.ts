@@ -23,6 +23,8 @@ export type HingeSide = 'left' | 'right';
  */
 export type FrontStyle = 'overlay' | 'inset';
 export type Lining = 'none' | 'parkett';
+/** Metal frame around clear-glass doors (aluminium frame door). */
+export type GlassFrame = 'none' | 'alu' | 'black' | 'bronze';
 
 export interface Section {
   id: string;
@@ -99,6 +101,13 @@ export interface Materials {
   mattCarrier: number;
   mattGlass: number;
   clearGlass: number;
+  glassFrame: GlassFrame;
+  /** Visible face width of the frame profile. */
+  glassFrameWidth: number;
+  /** Profile depth = door thickness of a framed glass door. */
+  glassFrameDepth: number;
+  /** Glass pane in the frame. */
+  framedGlass: number;
   /** Total thickness of a parquet-clad wooden front. */
   woodFront: number;
   shelfGlass: number;
@@ -155,6 +164,9 @@ export type MaterialKey =
   | 'matt-fango'
   | 'black'
   | 'steel'
+  | 'metal-alu'
+  | 'metal-black'
+  | 'metal-bronze'
   | 'led';
 
 export type Vec3 = [number, number, number];

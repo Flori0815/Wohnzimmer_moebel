@@ -87,7 +87,7 @@ Technik: Vite + TypeScript + three.js, Vitest für das Modell, GitHub Actions f�
 | Vitrinenfächer innen | Auskleidung mit 10-mm-Dielen + 2 mm Eiche-Umleimer auf den Korpuskanten | Eiche-furniertes Multiplex, Siebdruckrand am Glas |
 | Fronten | aufliegend, bündig in der Verkleidung, 3 mm Fuge, grifflos (Push-to-open) | einliegend, mit Griffleiste |
 | Mattglas-Fronten | Mattglas 4 mm (weiß/anthrazit/fango) auf Multiplex-Trägertür 15 mm | Parkett-Front, lackierte Front |
-| Vitrinentüren | Ganzglastür ESG 6 mm klar (Glastürscharniere) | Eichenrahmen mit Glasfüllung |
+| Vitrinentüren | Ganzglastür ESG 6 mm klar (Glastürscharniere) | **Metallrahmen** (Alu natur/schwarz/bronze, Rahmenbreite frei), Eichenrahmen mit Glasfüllung |
 | Holzfronten | Multiplex 12 mm + Parkett 14 mm = 26 mm | 3-Schicht-Massivholzplatte Eiche 19 mm |
 | Sockel | zurückgesetzt 60 mm hoch, schwarz | schwarze Metallkufen (wie Lago-Lowboard), Füße, wandhängend |
 | Hirnholz-Applikation | Band aus quadratischen Kacheln 180 mm, 18 mm dick | Anzahl, Position, stufiger Versatz frei |

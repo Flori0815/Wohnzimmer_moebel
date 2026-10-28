@@ -211,7 +211,11 @@ export function renderPanel(root: HTMLElement, host: PanelHost) {
       numberField('Front zurückgesetzt', m.frontSetback, set((v) => (m.frontSetback = v)), { min: 0, max: 20, unit: 'mm' }),
       numberField('Mattglas-Träger', m.mattCarrier, set((v) => (m.mattCarrier = v)), { min: 8, max: 25, unit: 'mm' }),
       numberField('Mattglas', m.mattGlass, set((v) => (m.mattGlass = v)), { min: 3, max: 8, unit: 'mm' }),
-      numberField('Klarglastür ESG', m.clearGlass, set((v) => (m.clearGlass = v)), { min: 4, max: 10, unit: 'mm' }),
+      selectField('Klarglastür-Rahmen', m.glassFrame, [['none', 'ohne (Ganzglas)'], ['alu', 'Metallrahmen Alu natur'], ['black', 'Metallrahmen schwarz'], ['bronze', 'Metallrahmen bronze']], set((v: 'none' | 'alu' | 'black' | 'bronze') => (m.glassFrame = v), true)),
+      m.glassFrame !== 'none' ? numberField('Rahmenbreite', m.glassFrameWidth, set((v) => (m.glassFrameWidth = v)), { min: 5, max: 120, unit: 'mm' }) : null,
+      m.glassFrame !== 'none' ? numberField('Profiltiefe', m.glassFrameDepth, set((v) => (m.glassFrameDepth = v)), { min: 10, max: 40, unit: 'mm', hint: 'bestimmt die Türstärke' }) : null,
+      m.glassFrame !== 'none' ? numberField('Glas im Rahmen', m.framedGlass, set((v) => (m.framedGlass = v)), { min: 3, max: 8, unit: 'mm' }) : null,
+      m.glassFrame !== 'none' ? null : numberField('Klarglastür ESG', m.clearGlass, set((v) => (m.clearGlass = v)), { min: 4, max: 10, unit: 'mm' }),
       numberField('Parkettfront gesamt', m.woodFront, set((v) => (m.woodFront = v)), { min: m.cladding + 6, max: 40, unit: 'mm' }),
     ),
   );

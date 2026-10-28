@@ -65,6 +65,14 @@ export function hardwareList(cfg: FurnitureConfig, res: BuildResult, drill: Dril
   for (const [nl, n] of drawerRuns) {
     add('Fronten', `Unterflur-Vollauszug NL ${nl} mm mit Push-to-open (Paar)`, n, 'Paar', 'Schubkastenseiten 12 mm, Luft 5 mm je Seite – Herstellermaße prüfen');
   }
+  const frameBars = res.parts.filter((p) => p.material.startsWith('metal-'));
+  if (frameBars.length) {
+    const len = frameBars.reduce((sum, p) => sum + (p.cut?.length ?? 0), 0) / 1000;
+    const doorsWithFrame = frameBars.length / 4;
+    add('Fronten', `Alu-Rahmenprofil ${m.glassFrameWidth} × ${m.glassFrameDepth} mm für Glas ${m.framedGlass} mm`, Math.ceil(len * 1.1 * 10) / 10, 'm', 'inkl. 10 % Verschnitt; Gehrungen 45°; alternativ beim Profilhändler auf Maß fertigen lassen');
+    add('Fronten', 'Eckverbinder für Rahmenprofil', doorsWithFrame * 4, 'Stk', '');
+    add('Fronten', 'Glasdichtung / Verglasungsgummi', Math.ceil(len * 10) / 10, 'm', '');
+  }
   if (res.parts.some((p) => p.material.startsWith('matt'))) {
     const area = res.parts.filter((p) => p.material.startsWith('matt')).reduce((s, p) => s + p.size[0] * p.size[1], 0) / 1e6;
     add('Fronten', 'Spiegelkleber (Kartusche)', Math.max(1, Math.ceil(area / 1.5)), 'Stk', `${area.toFixed(2)} m² Mattglas`);

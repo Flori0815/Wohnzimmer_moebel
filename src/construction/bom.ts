@@ -37,6 +37,9 @@ export function stockOf(p: Part): StockKind {
     case 'endgrain':
       return 'hirnholz';
     case 'steel':
+    case 'metal-alu':
+    case 'metal-black':
+    case 'metal-bronze':
       return 'stahl';
     case 'led':
       return 'led';
@@ -62,6 +65,12 @@ export function materialName(p: Part, _cfg: FurnitureConfig): string {
       return 'Eiche Hirnholz';
     case 'steel':
       return 'Flachstahl schwarz';
+    case 'metal-alu':
+      return `Alu-Rahmenprofil ${p.cut?.width} × ${t} mm, natur eloxiert`;
+    case 'metal-black':
+      return `Alu-Rahmenprofil ${p.cut?.width} × ${t} mm, schwarz`;
+    case 'metal-bronze':
+      return `Alu-Rahmenprofil ${p.cut?.width} × ${t} mm, bronze eloxiert`;
     case 'led':
       return 'LED-Profil';
     default:
@@ -74,7 +83,7 @@ const STOCK_ORDER: StockKind[] = ['multiplex', 'parkett', 'massivholz', 'glas', 
 
 function grainText(p: Part): string {
   if (p.material === 'endgrain') return 'Hirnholz vorne';
-  if (stockOf(p) === 'glas' || p.material === 'led' || p.material === 'steel') return '–';
+  if (stockOf(p) === 'glas' || p.material === 'led' || stockOf(p) === 'stahl') return '–';
   return 'längs';
 }
 
@@ -93,7 +102,10 @@ function noteFor(p: Part, cfg: FurnitureConfig): string {
   if (p.id.startsWith('ul-')) notes.push('auf die Multiplexkante hinter dem Klarglas');
   if (p.id === 'rueckwand') notes.push(`in Falz ${Math.floor(cfg.materials.carcass / 2)} mm`);
   if (p.group === 'boden' && stockOf(p) === 'multiplex') notes.push('Vorderkante Eiche-Umleimer 2 mm');
-  if (p.group === 'glas' && p.material === 'glass-clear' && p.name.startsWith('Tür')) notes.push('Kanten poliert, Scharnierbohrungen lt. Beschlag');
+  if (p.group === 'glas' && p.material === 'glass-clear' && p.name.startsWith('Tür')) {
+    notes.push(p.name.includes('im Rahmen') ? 'Kanten gesäumt, inkl. 5 mm Einstand im Profil' : 'Kanten poliert, Scharnierbohrungen lt. Beschlag');
+  }
+  if (p.material.startsWith('metal-')) notes.push('Länge außen gemessen');
   if (p.group === 'glas' && p.name.startsWith('Glasboden')) notes.push('Kanten poliert');
   if (p.group === 'glas' && p.material.startsWith('matt')) notes.push('vollflächig auf Träger kleben (Spiegelkleber)');
   if (p.group === 'front' && p.name.includes('Träger')) notes.push('Kanten passend zur Front lackieren/ölen');
@@ -164,7 +176,7 @@ const DENSITY: Partial<Record<StockKind, number>> = {
 export function weight(res: BuildResult): number {
   let kg = 0;
   for (const p of res.parts) {
-    const d = DENSITY[stockOf(p)];
+    const d = p.material.startsWith('metal-') ? 2700 : DENSITY[stockOf(p)];
     if (!d) continue;
     kg += ((p.size[0] * p.size[1] * p.size[2]) / 1e9) * d;
   }
