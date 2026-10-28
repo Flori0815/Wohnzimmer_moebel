@@ -64,8 +64,18 @@ export function renderConstruction(root: HTMLElement, cfg: FurnitureConfig, res:
   const hw = hardwareList(cfg, res, drill);
   const steps = assemblySteps(cfg, res, drill);
 
-  const parquetParts = res.parts.filter((p) => p.material === 'oak' && p.cut);
-  const plankPlan = planPlanks(parquetParts.map(pieceOf), cfg.materials.plankLength, cfg.materials.plankWidth, settings.kerf, settings.plankTrim);
+  // one plank plan per parquet thickness (outer cladding vs. thinner interior lining)
+  const byThickness = new Map<number, Part[]>();
+  for (const p of res.parts) {
+    if (p.material !== 'oak' || !p.cut) continue;
+    byThickness.set(p.cut.thickness, [...(byThickness.get(p.cut.thickness) ?? []), p]);
+  }
+  const plankPlans = [...byThickness.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([thickness, parts]) => {
+      const plan = planPlanks(parts.map(pieceOf), cfg.materials.plankLength, cfg.materials.plankWidth, settings.kerf, settings.plankTrim);
+      return { thickness, plan, needed: Math.ceil(plan.planks.length * (1 + settings.waste / 100)) };
+    });
   const sheetGroups = new Map<string, Part[]>();
   for (const p of res.parts) {
     if (stockOf(p) !== 'multiplex' || !p.cut) continue;
@@ -78,13 +88,12 @@ export function renderConstruction(root: HTMLElement, cfg: FurnitureConfig, res:
   }));
 
   const errors = res.warnings.filter((w) => w.level === 'error');
-  const planksNeeded = Math.ceil(plankPlan.planks.length * (1 + settings.waste / 100));
 
   const stats: [string, string][] = [
     ['Außenmaße', `${cfg.width} × ${cfg.height} × ${cfg.depth} mm`],
     ['Bauteile', String(res.parts.filter((p) => p.group !== 'led').length)],
     ['Gewicht ca.', `${Math.round(weight(res))} kg`],
-    ['Parkett', `${plankPlan.areaM2.toFixed(2)} m² · ${planksNeeded} Dielen (inkl. ${settings.waste} %)`],
+    ...plankPlans.map(({ thickness, plan, needed }) => [`Parkett ${thickness} mm`, `${plan.areaM2.toFixed(2)} m² · ${needed} Dielen (inkl. ${settings.waste} %)`] as [string, string]),
     ...sheetPlans.map(({ name, plan }) => [name, `${plan.sheets.length} Platte(n) ${settings.sheetL} × ${settings.sheetW}`] as [string, string]),
     ['Einschraubmuffen', `${drill.muffCount} × ${muffSpec(cfg.materials.cladding).muffe.replace('Einschraubmuffe ', '')}`],
   ];
@@ -105,7 +114,7 @@ export function renderConstruction(root: HTMLElement, cfg: FurnitureConfig, res:
       h('div', { class: 'stats' }, ...stats.map(([k, v]) => h('div', { class: 'stat' }, h('span', {}, k), h('strong', {}, v)))),
       settingsBox(rerender),
       section('Zuschnittliste', cutTable(rows)),
-      section('Dielenplan (Landhausdielen)', plankSection(plankPlan, cfg, planksNeeded)),
+      section('Dielenplan (Landhausdielen)', ...plankPlans.map(({ thickness, plan, needed }) => plankSection(plan, cfg, needed, thickness))),
       section('Plattenplan (Multiplex)', ...sheetPlans.map(({ name, plan }) => sheetSection(name, plan))),
       section('Beschläge & Material', hardwareTable(hw), hingeTable(drill)),
       section('Bohrpläne Korpus (Innenansicht)', drillIntro(cfg), ...drill.views.map((v) => drillView(v, drill.holes.filter((x) => x.panel === v.partId), res))),
@@ -168,7 +177,7 @@ function cutTable(rows: CutRow[]): HTMLElement {
   );
 }
 
-function plankSection(plan: PlankPlan, cfg: FurnitureConfig, needed: number): HTMLElement {
+function plankSection(plan: PlankPlan, cfg: FurnitureConfig, needed: number, thickness: number): HTMLElement {
   const L = cfg.materials.plankLength;
   const W = cfg.materials.plankWidth;
   const scale = 860 / L;
@@ -187,8 +196,10 @@ function plankSection(plan: PlankPlan, cfg: FurnitureConfig, needed: number): HT
     }
   });
   svg += '</svg>';
+  const usage = thickness === cfg.materials.cladding ? 'Außenverkleidung' : 'Innenauskleidung / Fronten';
   return h('div', {},
-    h('p', {}, `Diele ${L} × ${W} mm, Kopfenden je ${settings.plankTrim} mm abgeschnitten. Benötigt: `, h('strong', {}, `${plan.planks.length} Dielen`), `, mit ${settings.waste} % Zuschlag `, h('strong', {}, `${needed} Dielen`), ` (${plan.areaM2.toFixed(2)} m² Nettofläche).`),
+    h('h4', {}, `${thickness} mm – ${usage}`),
+    h('p', {}, `Diele ${L} × ${W} × ${thickness} mm, Kopfenden je ${settings.plankTrim} mm abgeschnitten. Benötigt: `, h('strong', {}, `${plan.planks.length} Dielen`), `, mit ${settings.waste} % Zuschlag `, h('strong', {}, `${needed} Dielen`), ` (${plan.areaM2.toFixed(2)} m² Nettofläche).`),
     plan.tooLong.length ? h('div', { class: 'warn warn' }, `⚠ Länger als eine Diele (Längsstoß nötig oder längere Dielen): ${plan.tooLong.map((p) => `${shortLabel(p.label)} ${Math.round(p.length)} mm`).join(', ')}`) : null,
     plan.tooWide.length ? h('div', { class: 'warn warn' }, `⚠ Breiter als die Diele: ${plan.tooWide.map((p) => shortLabel(p.label)).join(', ')}`) : null,
     svgEl(svg),

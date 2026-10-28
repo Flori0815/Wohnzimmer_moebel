@@ -34,8 +34,9 @@ Beleuchtung*, *Glastür mit prägnanter Hirnholzapplikation*, *Vitrinenschrank m
 
 **Beobachtungen aus den Fotos (wichtig für den Nachbau):**
 
-- Der **Eichenkorpus umrahmt** alle Fronten sichtbar mit ca. 25–30 mm breiten Kanten. Die Fronten liegen **einliegend
-  und bündig** im Rahmen, mit schmalen Fugen und ohne Griffe.
+- Die Fronten sind **eingelassen und bündig**. Vom Korpus bleibt von vorne nur eine **schmale Eichenkante** ringsum
+  sichtbar. **Zwischen den Fächern** (z. B. Mattglastür über Glasfach) gibt es **keinen Holzsteg**, nur eine Fuge.
+  Die Fronten decken also Mittelwände und Zwischenböden ab. Keine Griffe.
 - Die **Standvitrine** (S. 5) ist in drei Zonen geteilt: oben eine Mattglas-Tür, in der Mitte ein **Klarglas-Fach mit
   LED**, Eichen-Rückwand und Hirnholzblock, unten eine Mattglas-Tür. Eine Variante hat einen Schubkasten im Glasfach.
 - Das **Sideboard** (S. 6) hat links eine Mattglas-Tür, in der Mitte eine Klarglas-Vitrinentür mit Glasböden und LED
@@ -59,7 +60,7 @@ Beleuchtung*, *Glastür mit prägnanter Hirnholzapplikation*, *Vitrinenschrank m
 | Griffe | **Grifflos** zu öffnende Drehtüren (Push-to-open) | Push-to-open-Beschläge (Tip-On) als Standard |
 | Licht | **LED-Beleuchtung** in Glasfächern / Vitrinenteilen (Energieklasse A) | LED-Profil oben im Fach, Glasböden |
 | Innen | Holzböden + **Glasböden**, Schubladen, Kabelschacht im Unterteil | Fachböden in Multiplex/Glas, Schubkästen, Kabeldurchlass in Rückwand |
-| Proportion | Klare, rechtwinklige Kuben; Korpus umrahmt die Fronten (Fronten liegen **innen** im Rahmen) | Fronten als Einlage-Türen in der Parkett-Umrahmung |
+| Proportion | Klare, rechtwinklige Kuben; Fronten bündig, nur schmale Korpuskante sichtbar, keine Stege zwischen Fronten | Fronten liegen auf dem Multiplex auf, Parkettverkleidung steht bis zur Frontebene vor (siehe Konstruktionskonzept §5) |
 | Herkunft | Made in Germany, „Goldenes M“ (RAL-Gütezeichen) | – |
 
 ## 2. Bekannte Lago-Typen und Maße (B × H × T in cm)

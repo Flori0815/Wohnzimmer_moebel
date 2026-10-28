@@ -83,8 +83,9 @@ Technik: Vite + TypeScript + three.js, Vitest für das Modell, GitHub Actions f�
 | Multiplex | Birke 18 mm | 15 / 21 mm, Pappel (leichter) |
 | Parkett | 3-Schicht-Landhausdiele Eiche 14 mm, 190 mm breit, 2200 mm lang | 15 mm / 20 mm (mehr Fleisch für Muffen), 2-Schicht 10 mm |
 | Ecken der Verkleidung | Gehrung 45° | stumpf mit Massiv-Eckleiste |
-| Vorderkanten | Massiveiche-Anleimer 8 mm (deckt Multiplex + Diele ab) | Diele sichtbar mit Mittellage (nicht empfohlen) |
-| Fronten | Einliegend, bündig, 3 mm Fuge, grifflos (Push-to-open) | aufliegend, mit Griffleiste |
+| Frontausbildung | **Lago-Stil:** Fronten liegen auf dem Korpus auf und sitzen bündig in der vorstehenden Parkettverkleidung; sichtbar ist nur die Dielenkante mit 5 mm Eiche-Anleimer | einliegend mit 32 mm breitem Eichenrahmen |
+| Vitrinenfächer innen | Auskleidung mit 10-mm-Dielen + 2 mm Eiche-Umleimer auf den Korpuskanten | Eiche-furniertes Multiplex, Siebdruckrand am Glas |
+| Fronten | aufliegend, bündig in der Verkleidung, 3 mm Fuge, grifflos (Push-to-open) | einliegend, mit Griffleiste |
 | Mattglas-Fronten | Mattglas 4 mm (weiß/anthrazit/fango) auf Multiplex-Trägertür 15 mm | Parkett-Front, lackierte Front |
 | Vitrinentüren | Ganzglastür ESG 6 mm klar (Glastürscharniere) | Eichenrahmen mit Glasfüllung |
 | Holzfronten | Multiplex 12 mm + Parkett 14 mm = 26 mm | 3-Schicht-Massivholzplatte Eiche 19 mm |

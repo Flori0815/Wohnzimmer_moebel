@@ -16,6 +16,13 @@ export type CornerJoint = 'miter' | 'butt';
 export type ShelfMaterial = 'glass' | 'wood';
 export type InteriorFinish = 'multiplex' | 'oak';
 export type HingeSide = 'left' | 'right';
+/**
+ * overlay: Lago style – fronts cover the whole carcass incl. dividers and sit flush inside the
+ *          projecting parquet cladding; only the thin cladding edge shows from the front.
+ * inset:   fronts sit inside a visible oak frame (carcass + cladding edges with lipping).
+ */
+export type FrontStyle = 'overlay' | 'inset';
+export type Lining = 'none' | 'parkett';
 
 export interface Section {
   id: string;
@@ -69,8 +76,12 @@ export interface Materials {
   cladding: number;
   plankWidth: number;
   plankLength: number;
-  /** Solid oak lipping on the front edges. */
+  /** Solid oak lipping on the visible front edges (cladding edge, or whole frame when inset). */
   edgeBand: number;
+  frontStyle: FrontStyle;
+  /** Parquet lining inside compartments with clear glass or open fronts (hides the Multiplex). */
+  lining: Lining;
+  liningThickness: number;
   sideGrain: GrainDir;
   topGrain: GrainDir;
   corner: CornerJoint;
@@ -116,6 +127,7 @@ export type PartGroup =
   | 'korpus'
   | 'rueckwand'
   | 'verkleidung'
+  | 'auskleidung'
   | 'anleimer'
   | 'front'
   | 'glas'

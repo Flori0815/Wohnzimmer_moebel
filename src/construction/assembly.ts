@@ -42,12 +42,28 @@ export function assemblySteps(cfg: FurnitureConfig, res: BuildResult, drill: Dri
       'Rückwand in den Falz einlegen, verleimen und schrauben. Sie stabilisiert den Korpus.',
     ].filter(Boolean),
   });
+  if (res.parts.some((p) => p.group === 'auskleidung')) {
+    steps.push({
+      title: 'Innenauskleidung der Vitrinenfächer',
+      items: [
+        `Fächer mit Klarglas- oder offener Front mit Dielen (${m.liningThickness} mm) auskleiden: zuerst die Rückwand, dann Seiten, Boden und Decke.`,
+        'Von außen durch den Korpus schrauben. Das geht nur, solange die Außenverkleidung noch nicht montiert ist. Die Muffenpositionen dabei freihalten.',
+        'Bodenträger-Löcher erst nach dem Auskleiden durch Auskleidung und Korpus bohren (Bohrschablone).',
+        'Kabel für die LED vorher durch die Rückwand führen.',
+      ],
+    });
+  }
   steps.push({
     title: 'Massivholz-Anleimer',
-    items: [
-      `Eiche-Anleimer (${m.edgeBand} mm) an alle sichtbaren Vorderkanten: Seiten und Deckel/Boden decken Korpus + Parkett ab (${m.carcass + m.cladding} mm breit).`,
-      'Nur mit dem Multiplex verleimen, zur Diele hin trocken stoßen. Mit Übermaß anleimen und danach bündig fräsen.',
-    ],
+    items: m.frontStyle === 'overlay'
+      ? [
+          `Die Verkleidung steht vorne um die Frontstärke über den Korpus über, damit die Fronten bündig in ihr sitzen. Sichtbar bleibt nur die ${m.cladding} mm schmale Dielenkante.`,
+          `Diese Kante mit einem ${m.edgeBand} mm Eiche-Anleimer abdecken (verdeckt die Mittellage der Diele). Anleimer auf Gehrung, auf die Verkleidungsteile leimen, bevor sie montiert werden.`,
+        ]
+      : [
+          `Eiche-Anleimer (${m.edgeBand} mm) an alle sichtbaren Vorderkanten: Seiten und Deckel/Boden decken Korpus + Parkett ab (${m.carcass + m.cladding} mm breit).`,
+          'Nur mit dem Multiplex verleimen, zur Diele hin trocken stoßen. Mit Übermaß anleimen und danach bündig fräsen.',
+        ],
   });
   steps.push({
     title: 'Verkleidung aus Landhausdielen',
@@ -67,7 +83,10 @@ export function assemblySteps(cfg: FurnitureConfig, res: BuildResult, drill: Dri
         has((s) => s.surface === 'glass-clear' && s.front !== 'drawers') ? 'ESG-Klarglastüren beim Glaser mit Scharnierbohrungen bestellen (Maße lt. Zuschnittliste, Kanten poliert).' : '',
         has((s) => s.surface === 'oak') ? 'Parkettfronten: Diele auf Multiplexträger schrauben (von hinten) oder vollflächig verleimen. Bei der kleinen Fläche ist das unkritisch.' : '',
         has((s) => s.front === 'drawers') ? 'Schubkästen bauen (Seiten 12 mm), Unterflurführungen montieren, Fronten mit Fugenmaß ausrichten.' : '',
-        `Türen einhängen, Fugen auf ${m.frontGap} mm einstellen, Push-to-open montieren.`,
+        m.frontStyle === 'overlay'
+          ? `Türen aufliegend einhängen (an Mittelwänden halb aufliegend). Fugen auf ${m.frontGap} mm einstellen, auch zur Verkleidung. Vorher an einer Tür testen, ob sie beim Öffnen frei an der überstehenden Verkleidung vorbeischwenkt; sonst die Fuge vergrößern oder ein Scharnier mit Nullanschlag nehmen.`
+          : `Türen einhängen, Fugen auf ${m.frontGap} mm einstellen.`,
+        'Push-to-open montieren.',
       ].filter(Boolean),
     });
   }

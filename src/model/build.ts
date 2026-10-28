@@ -22,6 +22,20 @@ export const DRAWER_SIDE = 12;
 export const DRAWER_BOTTOM = 10;
 /** Lateral clearance per side for under-mount runners. */
 export const DRAWER_CLEARANCE = 5;
+/** Air between the back of overlay fronts and the carcass front edge. */
+export const FRONT_CLEARANCE = 2;
+
+/** Compartments whose inside is on show (clear glass or no front). */
+export function isVisibleInside(sec: { front: string; surface: Surface }): boolean {
+  return sec.front === 'open' || sec.surface === 'glass-clear';
+}
+
+/** Thickest front – sets how far the carcass sits behind the front plane in overlay style. */
+export function maxFrontThickness(cfg: FurnitureConfig): number {
+  let tmax = 0;
+  for (const col of cfg.columns) for (const s of col.sections) if (s.front !== 'open') tmax = Math.max(tmax, frontThickness(cfg, s.surface));
+  return tmax;
+}
 
 export function frontThickness(cfg: FurnitureConfig, surface: Surface): number {
   const m = cfg.materials;
@@ -99,7 +113,12 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
   // The furniture body spans y ∈ [yBottom, yBottom + bodyH]
   const bodyH = cfg.base.kind === 'wall' ? H : H - baseY;
   const yTop = yBottom + bodyH;
-  const Dk = D - e; // carcass depth behind the solid lipping
+  const overlay = m.frontStyle === 'overlay';
+  const zf = D - m.frontSetback; // front plane
+  // overlay: carcass ends behind the fronts, the cladding runs forward to the front plane
+  const Dk = overlay ? zf - maxFrontThickness(cfg) - FRONT_CLEARANCE : D - e;
+  const Dc = D - e; // cladding depth
+  if (Dk < 200) warnings.push({ level: 'error', text: `Korpustiefe nur ${Math.round(Dk)} mm – Tiefe erhöhen.` });
   const Wk = W - 2 * c;
   const Hk = bodyH - 2 * c;
   const yk = yBottom + c;
@@ -125,17 +144,25 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
   const miter = m.corner === 'miter';
   const sideAlong: Axis = m.sideGrain === 'vertical' ? 'y' : 'z';
   const topAlong: Axis = m.topGrain === 'horizontal' ? 'x' : 'z';
-  cladPanel(parts, m.plankWidth, 'vk-l', 'Verkleidung links', [0, yBottom, 0], [c, bodyH, Dk], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
-  cladPanel(parts, m.plankWidth, 'vk-r', 'Verkleidung rechts', [W - c, yBottom, 0], [c, bodyH, Dk], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
-  cladPanel(parts, m.plankWidth, 'vk-o', 'Verkleidung oben', [c, yTop - c, 0], [Wk, c, Dk], topAlong, miter ? { axis: 'x', ext: c } : null);
-  cladPanel(parts, m.plankWidth, 'vk-u', 'Verkleidung unten', [c, yBottom, 0], [Wk, c, Dk], topAlong, miter ? { axis: 'x', ext: c } : null);
+  cladPanel(parts, m.plankWidth, 'vk-l', 'Verkleidung links', [0, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
+  cladPanel(parts, m.plankWidth, 'vk-r', 'Verkleidung rechts', [W - c, yBottom, 0], [c, bodyH, Dc], sideAlong, miter ? { axis: 'y', ext: 0 } : null);
+  cladPanel(parts, m.plankWidth, 'vk-o', 'Verkleidung oben', [c, yTop - c, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null);
+  cladPanel(parts, m.plankWidth, 'vk-u', 'Verkleidung unten', [c, yBottom, 0], [Wk, c, Dc], topAlong, miter ? { axis: 'x', ext: c } : null);
 
   // --- solid oak lipping on the front edges -------------------------------
-  const zL = Dk;
-  add({ id: 'al-l', name: 'Anleimer links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
-  add({ id: 'al-r', name: 'Anleimer rechts', group: 'anleimer', material: 'oak-solid', pos: [W - c - t, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
-  add({ id: 'al-o', name: 'Anleimer oben', group: 'anleimer', material: 'oak-solid', pos: [c + t, yTop - c - t, zL], size: [Wk - 2 * t, c + t, e], grain: 'x' });
-  add({ id: 'al-u', name: 'Anleimer unten', group: 'anleimer', material: 'oak-solid', pos: [c + t, yBottom, zL], size: [Wk - 2 * t, c + t, e], grain: 'x' });
+  const zL = Dc;
+  if (overlay) {
+    // only the parquet edge shows – a thin oak strip hides the 3-layer core
+    add({ id: 'al-l', name: 'Anleimer Verkleidung links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [c, bodyH, e], grain: 'y' });
+    add({ id: 'al-r', name: 'Anleimer Verkleidung rechts', group: 'anleimer', material: 'oak-solid', pos: [W - c, yBottom, zL], size: [c, bodyH, e], grain: 'y' });
+    add({ id: 'al-o', name: 'Anleimer Verkleidung oben', group: 'anleimer', material: 'oak-solid', pos: [c, yTop - c, zL], size: [Wk, c, e], grain: 'x' });
+    add({ id: 'al-u', name: 'Anleimer Verkleidung unten', group: 'anleimer', material: 'oak-solid', pos: [c, yBottom, zL], size: [Wk, c, e], grain: 'x' });
+  } else {
+    add({ id: 'al-l', name: 'Anleimer links', group: 'anleimer', material: 'oak-solid', pos: [0, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
+    add({ id: 'al-r', name: 'Anleimer rechts', group: 'anleimer', material: 'oak-solid', pos: [W - c - t, yBottom, zL], size: [c + t, bodyH, e], grain: 'y' });
+    add({ id: 'al-o', name: 'Anleimer oben', group: 'anleimer', material: 'oak-solid', pos: [c + t, yTop - c - t, zL], size: [Wk - 2 * t, c + t, e], grain: 'x' });
+    add({ id: 'al-u', name: 'Anleimer unten', group: 'anleimer', material: 'oak-solid', pos: [c + t, yBottom, zL], size: [Wk - 2 * t, c + t, e], grain: 'x' });
+  }
 
   // --- base ---------------------------------------------------------------
   buildBase(cfg, add, warnings);
@@ -146,7 +173,6 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
   const yi0 = yk + t;
   const hi = Hk - 2 * t;
   const zBack = rb;
-  const zf = D - m.frontSetback;
   const inner = { x: xi0, y: yi0, w: wi, h: hi, zFront: Dk, zBack };
 
   const nCols = cfg.columns.length;
@@ -162,7 +188,7 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
     if (ci > 0) {
       const xd = xc - t;
       add({ id: `mw-${ci}`, name: `Mittelwand ${ci}`, group: 'korpus', material: interiorMat, pos: [xd, yi0, zBack], size: [t, hi, Dk - zBack], grain: 'y' });
-      add({ id: `al-mw-${ci}`, name: `Anleimer Mittelwand ${ci}`, group: 'anleimer', material: 'oak-solid', pos: [xd, yi0, zL], size: [t, hi, e], grain: 'y' });
+      if (!overlay) add({ id: `al-mw-${ci}`, name: `Anleimer Mittelwand ${ci}`, group: 'anleimer', material: 'oak-solid', pos: [xd, yi0, zL], size: [t, hi, e], grain: 'y' });
     }
 
     const nSec = col.sections.length;
@@ -177,15 +203,27 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
       if (si > 0) {
         const yd = ys - t;
         add({ id: `zb-${ci}-${si}`, name: `Zwischenboden S${ci + 1}/${si}`, group: 'korpus', material: interiorMat, pos: [xc, yd, zBack], size: [cw, t, Dk - zBack], grain: 'x', col: ci });
-        add({ id: `al-zb-${ci}-${si}`, name: `Anleimer Zwischenboden S${ci + 1}/${si}`, group: 'anleimer', material: 'oak-solid', pos: [xc, yd, zL], size: [cw, t, e], grain: 'x', col: ci });
+        if (!overlay) add({ id: `al-zb-${ci}-${si}`, name: `Anleimer Zwischenboden S${ci + 1}/${si}`, group: 'anleimer', material: 'oak-solid', pos: [xc, yd, zL], size: [cw, t, e], grain: 'x', col: ci });
       }
       openings.push({ col: ci, sec: si, x: xc, y: ys, w: cw, h: sh });
       const tag = `S${ci + 1}F${si + 1}`;
       const T = sec.front === 'open' ? 0 : frontThickness(cfg, sec.surface);
-      const zFrontBack = sec.front === 'open' ? Dk : zf - T;
+      // interior limit towards the front
+      const zFrontBack = sec.front === 'open' || overlay ? Dk : zf - T;
 
-      // fronts
-      const r: Rect = { x0: xc + g, x1: xc + cw - g, y0: ys + g, y1: ys + sh - g };
+      // fronts: inset into the opening, or (overlay) tiling the cladding opening with the
+      // joints on the middle of dividers
+      let r: Rect = { x0: xc + g, x1: xc + cw - g, y0: ys + g, y1: ys + sh - g };
+      if (overlay) {
+        const lastCol = ci === nCols - 1;
+        const lastSec = si === nSec - 1;
+        r = {
+          x0: (ci === 0 ? c + g : xc - t / 2 + g / 2),
+          x1: (lastCol ? W - c - g : xc + cw + t / 2 - g / 2),
+          y0: (si === 0 ? yk + g : ys - t / 2 + g / 2),
+          y1: (lastSec ? yk + Hk - g : ys + sh + t / 2 - g / 2),
+        };
+      }
       const addPanel = (rect: Rect, id: string, label: string, motion: Motion, grain: Axis) => {
         motions.push(motion);
         panels.push({ ...rect, motion: motion.id, zFront: zf, label });
@@ -231,22 +269,64 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
         warnings.push({ level: 'info', text: `${tag}: Tür ${Math.round(doorH)} mm hoch – mindestens 4 Scharniere.` });
       }
 
+      // parquet lining where the inside is on show
+      const lt = m.lining === 'parkett' && isVisibleInside(sec) ? m.liningThickness : 0;
+      if (lt > 0) {
+        const depth = Dk - zBack - lt;
+        const lining: [string, string, Vec3, Vec3, Axis][] = [
+          ['h', 'Rückwand', [xc, ys, zBack], [cw, sh, lt], 'y'],
+          ['l', 'links', [xc, ys, zBack + lt], [lt, sh, depth], 'y'],
+          ['r', 'rechts', [xc + cw - lt, ys, zBack + lt], [lt, sh, depth], 'y'],
+          ['u', 'Boden', [xc + lt, ys, zBack + lt], [cw - 2 * lt, lt, depth], 'x'],
+          ['o', 'Decke', [xc + lt, ys + sh - lt, zBack + lt], [cw - 2 * lt, lt, depth], 'x'],
+        ];
+        for (const [k, name, pos, size, along] of lining) {
+          const before = parts.length;
+          cladPanel(parts, m.plankWidth, `ak-${ci}-${si}-${k}`, `Auskleidung ${tag} ${name}`, pos, size, along, null);
+          for (let i = before; i < parts.length; i++) Object.assign(parts[i], { group: 'auskleidung', col: ci, sec: si });
+        }
+      }
+      // overlay + clear glass: the carcass front edges around the compartment show through
+      // the glass – cover them with a 2 mm oak edge band (half a divider per compartment)
+      if (overlay && isVisibleInside(sec)) {
+        const band = 2;
+        const lx = ci === 0 ? t : t / 2;
+        const rx = ci === nCols - 1 ? t : t / 2;
+        const by = si === 0 ? t : t / 2;
+        const ty = si === nSec - 1 ? t : t / 2;
+        const ring: [string, Vec3, Vec3, Axis][] = [
+          ['l', [xc - lx, ys - by, Dk], [lx, sh + by + ty, band], 'y'],
+          ['r', [xc + cw, ys - by, Dk], [rx, sh + by + ty, band], 'y'],
+          ['u', [xc, ys - by, Dk], [cw, by, band], 'x'],
+          ['o', [xc, ys + sh, Dk], [cw, ty, band], 'x'],
+        ];
+        for (const [k, pos, size, grain] of ring) {
+          add({ id: `ul-${ci}-${si}-${k}`, name: `Umleimer Korpuskante ${tag}`, group: 'anleimer', material: 'oak-solid', pos, size, grain, col: ci, sec: si });
+        }
+      }
+
+      const xin = xc + lt;
+      const win = cw - 2 * lt;
+      const yin = ys + lt;
+      const hin = sh - 2 * lt;
+      const zin = zBack + lt;
+
       // adjustable shelves
       if (sec.front !== 'drawers' && sec.shelves > 0) {
         const glass = sec.shelfMaterial === 'glass';
         const st = glass ? m.shelfGlass : t;
         const n = Math.round(sec.shelves);
-        const space = (sh - n * st) / (n + 1);
+        const space = (hin - n * st) / (n + 1);
         const zEnd = zFrontBack - (sec.front === 'open' ? 0 : 8);
         for (let i = 0; i < n; i++) {
-          const y = ys + space * (i + 1) + st * i;
+          const y = yin + space * (i + 1) + st * i;
           add({
             id: `fb-${ci}-${si}-${i}`,
             name: `${glass ? 'Glasboden' : 'Fachboden'} ${tag}.${i + 1}`,
             group: glass ? 'glas' : 'boden',
             material: glass ? 'glass-clear' : interiorMat,
-            pos: [xc + (glass ? 2 : 1), y, zBack + 2],
-            size: [cw - (glass ? 4 : 2), st, zEnd - zBack - 2],
+            pos: [xin + (glass ? 2 : 1), y, zin + 2],
+            size: [win - (glass ? 4 : 2), st, zEnd - zin - 2],
             grain: 'x',
             col: ci,
             sec: si,
@@ -257,10 +337,10 @@ export function buildFurniture(cfg: FurnitureConfig): BuildResult {
 
       // LED strip under the top of the compartment
       if (sec.led) {
-        const len = cw - 40;
-        const z = Math.max(zBack + 20, zFrontBack - 50);
-        add({ id: `led-${ci}-${si}`, name: `LED ${tag}`, group: 'led', material: 'led', pos: [xc + 20, ys + sh - 8, z], size: [len, 8, 12], grain: 'x', col: ci, sec: si });
-        lights.push({ pos: [xc + cw / 2, ys + sh - 12, z + 6], length: len });
+        const len = win - 40;
+        const z = Math.max(zin + 20, zFrontBack - 50);
+        add({ id: `led-${ci}-${si}`, name: `LED ${tag}`, group: 'led', material: 'led', pos: [xin + 20, yin + hin - 8, z], size: [len, 8, 12], grain: 'x', col: ci, sec: si });
+        lights.push({ pos: [xin + win / 2, yin + hin - 12, z + 6], length: len });
       }
 
       ys += sh + t;

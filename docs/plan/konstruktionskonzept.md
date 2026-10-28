@@ -51,15 +51,38 @@ Die App (Stufe 2) berechnet dieses Raster je Bauteil und gibt Bohrbilder aus.
 - **Außenecken der Verkleidung:** Gehrung 45° (wirkt wie Massivholz, die 3-Schicht-Mittellage ist unsichtbar).
   Gehrungsfuge nicht verleimen (würde die Bewegung blockieren), höchstens mit Lamello P-System oder Clamex lösbar
   verbinden – oder einfach präzise stoßen, die Muffen halten beide Teile.
-- **Vorderkanten:** Massiveiche-Anleimer (Standard 8 mm stark), der die Multiplexkante **und** die Dielenkante
-  abdeckt (Breite = 18 + 14 = 32 mm). Verleimt **nur mit dem Multiplex**, zur Diele hin trocken gestoßen.
-  Ergebnis: rundum eine ca. 32 mm breite „Massivholzzarge“ wie bei Lago.
+- **Vorderkanten (Lago-Stil, Standard):** Sichtbar ist nur die 14 mm schmale Dielenkante. Sie bekommt einen
+  Eiche-Anleimer (ca. 5 mm), der die Fichten-Mittellage der Diele verdeckt. Er wird auf Gehrung geschnitten und auf
+  die Verkleidungsteile geleimt, bevor sie montiert werden. Der Multiplex-Korpus ist von vorne komplett von den
+  Fronten verdeckt.
+- **Vorderkanten (Variante „einliegend mit Rahmen“):** Massiveiche-Anleimer (8 mm), der Multiplex- und Dielenkante
+  abdeckt (18 + 14 = 32 mm breit). Verleimt nur mit dem Multiplex, ergibt eine breite Massivholzzarge.
 - **Faserrichtung:** Seiten senkrecht, Deckel/Boden quer (in Breitenrichtung) – entspricht einem massiven Kasten.
   In der App umstellbar.
 
 ## 5. Fronten im Lago-Stil
 
-- **Einliegend**, Fugen 3 mm, bündig mit der Anleimer-Vorderkante, **grifflos** über Push-to-open (Tip-On).
+Im Prospekt (S. 5/6) sieht man von vorne fast nur Fronten: zwischen den Fächern gibt es keine Holzstege, nur Fugen.
+Ringsum bleibt eine schmale Eichenkante. Umsetzung:
+
+```
+ Draufsicht, Ecke vorne links
+        Verkleidung (Diele 14) ─┐  ┌─ Anleimer 5 (sichtbare Kante)
+                                ▼  ▼
+   außen  ║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   ← Frontebene (bündig)
+          ║▓▓                      ░░░░░░░░░░░░░ Front (19, Mattglas auf Träger)
+          ║▓▓  Multiplex 18 ──┐    3 mm Fuge zur Verkleidung
+          ║▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒┘  ← Korpus endet Frontstärke + 2 mm hinter der Frontebene
+```
+
+- Der Korpus ist um **Frontstärke + 2 mm** weniger tief. Die **Verkleidung läuft bis zur Frontebene vor** und bildet
+  so den Rahmen, in dem die Fronten bündig sitzen.
+- Die Fronten liegen auf dem Korpus auf: an den Seiten voll aufliegend, an Mittelwänden und Zwischenböden halb
+  aufliegend (Fuge in der Mitte der Wand). Fugen 3 mm, grifflos über Push-to-open (Tip-On).
+- ⚠ **Scharnier-Kollision prüfen:** Aufliegende Türen schwenken beim Öffnen etwas nach außen. Die überstehende
+  Verkleidung steht im Weg, wenn die Fuge zu klein ist. Vor dem Bau eine Tür als Muster mit dem gewählten Scharnier
+  testen. Abhilfe: größere Fuge zur Verkleidung (4–5 mm), Scharnier mit Nullanschlag oder 155°-Scharnier, oder die
+  Verkleidung vorne leicht zurücksetzen (Einstellung „Front zurückgesetzt“).
 - **Mattglas-Fronten (geschlossen, wie Lago):** satiniertes, rückseitig lackiertes Glas 4 mm (z. B. „Matelac“-Typ,
   weiß / anthrazit / fango) vollflächig mit Spiegelkleber auf eine Trägertür aus Multiplex 15 mm geklebt
   (Gesamtstärke ca. 19 mm). Die Topfscharniere sitzen in der Trägerplatte. Glas und Multiplex arbeiten kaum,
@@ -73,6 +96,25 @@ Die App (Stufe 2) berechnet dieses Raster je Bauteil und gibt Bohrbilder aus.
   werden als Band auf die Front gesetzt, auch über Türgrenzen hinweg; jede Kachel sitzt dann auf genau einer Tür.
   Befestigung von hinten mit 2 Schrauben durch die Trägerplatte oder mit Klebepunkten auf Glas (Silikon/MS-Polymer
   elastisch, nie starr). Hirnholz vorher gut trocknen und mit Öl/Wachs stabilisieren.
+
+## 5a. Sichtbare Innenflächen hinter Klarglas (Vitrinenfächer)
+
+Hinter Klarglas sieht man Rückwand, Seiten, Boden, Decke und die Vorderkanten des Korpus. Bei Lago ist dort alles
+Eiche. Optionen (in der App: „Vitrinenfächer innen“):
+
+| Lösung | Aufwand | Optik | Hinweis |
+|---|---|---|---|
+| **Auskleidung mit Dielen (Standard in der App)** – 10 mm 2-Schicht-Parkett oder dünn aufgetrennte Dielen in Rückwand, Seiten, Boden und Decke einsetzen | mittel | identisch zur Außenverkleidung, sehr Lago-ähnlich | von außen durch den Korpus schrauben, **bevor** die Außenverkleidung montiert wird; das Fach wird dadurch um 2 × 10 mm kleiner (die App rechnet das ein) |
+| Eiche-furniertes Multiplex für den ganzen Korpus (App: „Korpus-Multiplex: Eiche furniert“) | gering | Furnier statt Diele, gleichmäßiger | teurer im Einkauf, Kanten trotzdem umleimen |
+| Nur die Rückwand im Glasfach aus Diele, Seiten mit Eiche-Furnier bebügeln | gering | Rückwand wirkt wie Lago | Furnier mit Bügeleisen/Weißleim auftragen |
+| Multiplex lasieren/ölen | minimal | Birke bleibt sichtbar | nicht Lago |
+
+**Vorderkanten im Glasfach:** Die Multiplexkanten von Seiten, Mittelwand und Zwischenböden schimmern durch das Glas.
+Die App setzt dort einen **2-mm-Eiche-Umleimer** (passt in die 2 mm Luft hinter der Front). Alternativ kann der
+Glaser die Klarglastür mit einem umlaufenden Siebdruckrand (schwarz/anthrazit) liefern, der die Kanten verdeckt.
+
+**Scharniere im ausgekleideten Fach:** Die Montageplatte sitzt auf der Auskleidung. Platte mit Distanz
+(+ Auskleidungsstärke) wählen oder an der Scharnierposition einen Klotz statt der Auskleidung setzen.
 
 ## 6. Licht
 

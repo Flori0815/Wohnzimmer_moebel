@@ -24,6 +24,11 @@ export function hardwareList(cfg: FurnitureConfig, res: BuildResult, drill: Dril
   add('Verkleidung', 'Karosseriescheibe passend', drill.muffCount, 'Stk', `Langloch im Korpus ${ms.langloch}, Fixpunkt rund`);
   add('Verkleidung', 'Bohrschablone MDF 6–8 mm', 1, 'Stk', 'selbst bauen: Lochbild lt. Bohrplan');
 
+  const lining = res.parts.filter((p) => p.group === 'auskleidung');
+  if (lining.length) {
+    add('Auskleidung', 'Spanplattenschraube 3,5 × 20 (von außen durch den Korpus)', lining.length * 4, 'Stk', 'vor dem Anbringen der Verkleidung; Schraubenlänge < Korpus + Auskleidung − 3 mm');
+  }
+
   // --- carcass joints
   const joints = res.parts.filter((p) => p.group === 'korpus' && p.id !== 'seite-l' && p.id !== 'seite-r');
   let biscuits = 0;
